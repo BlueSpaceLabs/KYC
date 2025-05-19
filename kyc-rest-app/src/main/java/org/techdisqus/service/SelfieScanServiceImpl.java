@@ -3,6 +3,7 @@ package org.techdisqus.service;
 
 
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -12,8 +13,10 @@ import com.innovatrics.dot.integrationsamples.disapi.ApiResponse;
 import com.innovatrics.dot.integrationsamples.disapi.model.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.techdisqus.dao.GetImageDao;
 import org.techdisqus.exception.ApiExecutionException;
-import org.techdisqus.request.UserSmileRequest;
+import org.techdisqus.request.UserSelfieRequest;
 import org.techdisqus.response.AbstractResponse;
 import org.techdisqus.response.UserSelfieResponse;
 
@@ -48,16 +51,21 @@ public class SelfieScanServiceImpl extends KycBaseService
 	@Value ( "${retry_time}")
 	private long retryTime;
 
+	@Autowired
+	private GetImageDao getImageDao;
 
 	@SneakyThrows
     @Override
-	public UserSelfieResponse scanSelfie(UserSmileRequest request) {
+	public UserSelfieResponse scanSelfie(UserSelfieRequest request) {
 		log.info("selfie scan started");
 
 		UserSelfieResponse response =  UserSelfieResponse.builder().build();
 
-		String customerId = request.getCustomerId();
 		Map<String, String> reqInfo = request.getRequestInformation();
+		String customerId = reqInfo.get("customerId");
+		response.setRequestId(reqInfo.get("requestId"));
+		response.setSpanId(getRequestId());
+		response.setUserData(reqInfo);
 
 		if(reqInfo.containsKey("livenessCreated")) {
 			customerOnboardingApi.deleteLiveness(customerId);
@@ -65,9 +73,9 @@ public class SelfieScanServiceImpl extends KycBaseService
 
 		customerOnboardingApi.createLiveness(customerId);
 
-		ApiResponse<CreateCustomerLivenessRecordResponse> createCustomerLivenessRecordResponseApiResponse = customerOnboardingApi.createLivenessRecordWithHttpInfo(customerId, request.getImage().getBytes());
+		CreateCustomerLivenessRecordResponse createCustomerLivenessRecordResponse = customerOnboardingApi.createLivenessRecord(customerId, Base64.getDecoder().decode(request.getImage()));
 
-		if(createCustomerLivenessRecordResponseApiResponse.getStatusCode() != 200) {
+		if(createCustomerLivenessRecordResponse.getErrorCode() != null) {
 			response.setErrorCode("SELFIE-001");
 			response.setErrorDetails("Error while creating selfie");
 		}else {
@@ -133,10 +141,10 @@ public class SelfieScanServiceImpl extends KycBaseService
 						throw new ApiExecutionException(e, request);
 					}
 					return unused;
-				});
+				}).join();
 
 				CreateSelfieRequest createSelfieRequest = new CreateSelfieRequest();
-				LivenessSelfieOrigin livenessSelfieOrigin = new LivenessSelfieOrigin().link(createCustomerLivenessRecordResponseApiResponse.getData().getLinks().getSelfie());
+				LivenessSelfieOrigin livenessSelfieOrigin = new LivenessSelfieOrigin().link(createCustomerLivenessRecordResponse.getLinks().getSelfie());
 				createSelfieRequest.setSelfieOrigin(livenessSelfieOrigin);
 
 				CreateSelfieResponse createSelfieResponse = customerOnboardingApi.createSelfie1(customerId, createSelfieRequest);
@@ -147,6 +155,22 @@ public class SelfieScanServiceImpl extends KycBaseService
 					response.setErrorCode("SELFIE-007");
 				}
 
+				CreateCustomerLivenessSelfieRequest createCustomerLivenessSelfieRequest = new CreateCustomerLivenessSelfieRequest();
+
+				SelfieOrigin selfieOrigin = new SelfieOrigin();
+				selfieOrigin.setLink(createSelfieResponse.getLinks().getSelf());
+				createCustomerLivenessSelfieRequest.setSelfieOrigin(selfieOrigin);
+				createCustomerLivenessSelfieRequest.setAssertion(CreateCustomerLivenessSelfieRequest.AssertionEnum.NONE);
+
+				CreateCustomerLivenessSelfieResponse createCustomerLivenessSelfieResponse = customerOnboardingApi.createLivenessSelfie(customerId, createCustomerLivenessSelfieRequest);
+
+				if(createCustomerLivenessSelfieResponse.getErrorCode() != null) {
+					log.error("Error while creating passive liveness selfie {}", createCustomerLivenessSelfieResponse.getErrorCode());
+				}
+
+				ImageCrop selfie = customerOnboardingApi.getSelfieImage(customerId);
+				response.setUserSelfie(Base64.getEncoder().encodeToString(selfie.getData()));
+
 				EvaluateCustomerLivenessRequest evaluateCustomerLivenessRequestPassive = new EvaluateCustomerLivenessRequest()
 						.type(EvaluateCustomerLivenessRequest.TypeEnum.PASSIVE_LIVENESS);
 
@@ -156,8 +180,6 @@ public class SelfieScanServiceImpl extends KycBaseService
 			}
 
 		}
-
-
 
 		log.info("selfie scan completed");
 

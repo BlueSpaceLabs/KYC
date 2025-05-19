@@ -3,7 +3,7 @@ package org.techdisqus.request;
 import lombok.Data;
 
 @Data
-public class UserSmileRequest extends DigitalOnboardingRequest{
+public class UserSelfieRequest extends DigitalOnboardingRequest{
 
     private String image;
 }

@@ -65,8 +65,9 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
         try {
             final CreateCustomerResponse customerResponse = customerOnboardingApi.createCustomer();
             String customerId = customerResponse.getId();
+            response.setCustomerId(customerId);
             log.info("Customer created with id: {}", customerId);
-
+            reqInfo.put("customerId", customerId);
             customerOnboardingApi.createDocument(customerId, new CreateDocumentRequest().advice(new DocumentAdvice()
                     .classification(new DocumentClassificationAdvice())).sources(getSources()));
             CreateDocumentPageResponse createDocumentResponseFront = customerOnboardingApi.createDocumentPage1(customerId, new CreateDocumentPageRequest().image(new Image().data(Base64.getDecoder().decode(request.getImage()))));

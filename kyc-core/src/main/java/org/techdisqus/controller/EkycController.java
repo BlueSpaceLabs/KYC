@@ -5,10 +5,7 @@ import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.techdisqus.request.*;
 import org.techdisqus.response.*;
-import org.techdisqus.service.DocumentScanService;
-import org.techdisqus.service.UserConfigService;
-import org.techdisqus.service.ValidateAccountService;
-import org.techdisqus.service.ValidateCodeService;
+import org.techdisqus.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +16,9 @@ public class EkycController {
 
     @Autowired
     private DocumentScanService documentScanService;
+
+    @Autowired
+    private SelfieScanService selfieScanService;
 
     @Autowired
     private ValidateAccountService validateAccountService;
@@ -80,6 +80,16 @@ public class EkycController {
     public DocumentScanResponse documentScanBinary(@RequestBody DocumentScanRequest request) throws ApiException {
         return documentScanService.scanDocument(request);
 
+    }
+
+    @SneakyThrows
+    @PostMapping(value = "/evaluateUserSelfie", consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<UserSelfieResponse> evaluateSelfie(@RequestBody UserSelfieRequest request) throws ApiException{
+        UserSelfieResponse response = selfieScanService.scanSelfie(request);
+
+        return response.isSuccess() ? ResponseEntity.ok(response) :
+                ResponseEntity.badRequest().body(response);
     }
 
 
