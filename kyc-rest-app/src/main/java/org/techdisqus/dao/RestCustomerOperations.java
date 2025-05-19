@@ -28,6 +28,12 @@ public class RestCustomerOperations extends AbstractRestDao implements CustomerO
                 .body(request)
                 .header("content-type", MediaType.APPLICATION_JSON_VALUE)
                 .exchange((clientRequest, clientResponse) ->
-                        Objects.requireNonNull(clientResponse.bodyTo(SaveToTrustStoreDaoResponse.class)));
+
+                {
+                    if(clientResponse.getStatusCode().value() == 204) {
+                        return null;
+                    }
+                    return Objects.requireNonNull(clientResponse.bodyTo(SaveToTrustStoreDaoResponse.class));
+                });
     }
 }
