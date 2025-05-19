@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.openapitools:jackson-databind-nullable:0.2.2'
     implementation 'org.threeten:threetenbp:1.5.2'
     implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.apache.commons:commons-text:1.11.0'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 

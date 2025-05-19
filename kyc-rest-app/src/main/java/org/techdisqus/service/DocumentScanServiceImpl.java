@@ -90,6 +90,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     new AtomicBoolean(type.equalsIgnoreCase("passport") ||
                             (StringUtils.isNotEmpty(documentType.getMachineReadableTravelDocument())) && documentType.getMachineReadableTravelDocument().toUpperCase().contains("TD") );
 
+            reqInfo.put("isPassport",isPassport.get() ? "true" : "false");
             if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
                 return setAndReturnErrorResponse("invalid.acct.selection", "Invalid document, foreigners must use  passport", response);
             }

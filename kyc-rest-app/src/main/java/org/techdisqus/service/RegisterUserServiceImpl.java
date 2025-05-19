@@ -115,7 +115,7 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
         String msisdn = reqInfo.get("msisdn");
         String encryptedMsisdn = encryptionUtil.encrypt(msisdn);
 
-        if (CollectionUtils.isEmpty(consents)) {
+       /* if (CollectionUtils.isEmpty(consents)) {
             logger.error("Consent not given for msisdn {}  ", encryptedMsisdn);
             String missingConsentMessage = messageProvider.getMessage("error.missing.consent", toLocale(request));
             response.setErrorCode("REGISTER-001");
@@ -135,7 +135,7 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
             response.setErrorCode("REGISTER-002");
 
             return response;
-        }
+        }*/
 
 
 

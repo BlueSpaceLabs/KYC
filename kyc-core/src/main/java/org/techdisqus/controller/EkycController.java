@@ -29,6 +29,15 @@ public class EkycController {
     @Autowired
     private UserConfigService userConfigService;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserAdditionalDocumentService userAdditionalDocumentService;
+
+    @Autowired
+    private RegisterUserService registerUserService;
+
 
 
     @PostMapping(value = "/validateAccount", consumes = {MediaType.APPLICATION_JSON_VALUE},
@@ -87,6 +96,36 @@ public class EkycController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserSelfieResponse> evaluateSelfie(@RequestBody UserSelfieRequest request) throws ApiException{
         UserSelfieResponse response = selfieScanService.scanSelfie(request);
+
+        return response.isSuccess() ? ResponseEntity.ok(response) :
+                ResponseEntity.badRequest().body(response);
+    }
+
+    @SneakyThrows
+    @PostMapping(value = "/user-details/submit", consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<UserDetailsResponse> submitUserDetailsService(@RequestBody UserDetailsRequest request) throws ApiException{
+        UserDetailsResponse response = userDetailsService.submitPersonalDetails(request);
+
+        return response.isSuccess() ? ResponseEntity.ok(response) :
+                ResponseEntity.badRequest().body(response);
+    }
+
+    @SneakyThrows
+    @PostMapping(value = "/additional-docs/upload", consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<UploadDocumentsResponse> additionalDocsUpload(@RequestBody UploadDocumentsRequest request) throws ApiException{
+        UploadDocumentsResponse response = userAdditionalDocumentService.uploadDocs(request);
+
+        return response.isSuccess() ? ResponseEntity.ok(response) :
+                ResponseEntity.badRequest().body(response);
+    }
+
+    @SneakyThrows
+    @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<RegisterUserResponse> registerUser(@RequestBody RegisterUserRequest request) throws ApiException{
+        RegisterUserResponse response = registerUserService.register(request);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);

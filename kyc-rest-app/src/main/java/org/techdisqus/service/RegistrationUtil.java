@@ -2,10 +2,9 @@ package org.techdisqus.service;
 
 
 import com.innovatrics.dot.integrationsamples.disapi.model.GetCustomerResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.techdisqus.dao.GetCustomerDetailsDao;
@@ -23,6 +22,7 @@ import org.techdisqus.response.ExtractedData;
 import org.techdisqus.service.utils.RegistrationStatusUtil;
 import org.techdisqus.service.utils.SimActivationUtil;
 import org.techdisqus.service.utils.UploadDocumentUtil;
+import org.techdisqus.service.utils.Utils;
 
 import javax.annotation.Resource;
 import java.util.Collections;
@@ -32,12 +32,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.techdisqus.service.utils.Utils.doFuzzyMatch;
-
 @Component
+@Slf4j
 public class RegistrationUtil extends KycBaseService {
 
-    private static Logger logger = LoggerFactory.getLogger(RegistrationUtil.class);
 
     @Resource
     private GetCustomerDetailsDao getCustomerDetailsDao;
@@ -59,6 +57,9 @@ public class RegistrationUtil extends KycBaseService {
 
     @Autowired
     private GetImageDao getImageDao;
+
+    @Autowired
+    private Utils utils;
 
 
     private static final List<Document> empty = Collections.emptyList();
@@ -355,7 +356,7 @@ public class RegistrationUtil extends KycBaseService {
             //checking phone number to handle partial updates
 
             if(phoneNo != null && fullNameInMaster != null) {
-                if (doFuzzyMatch(currentFullName, fullNameInMaster, request.getRequestInformation())) {
+                if (utils.doFuzzyMatch(currentFullName, fullNameInMaster, request.getRequestInformation())) {
 
                     //Handling for existing master will not have master external ID set and hence checking for empty.
                     String finalMasterExternalId = StringUtils.isNotEmpty(getCustomerDetailsDaoResponse.getCustomDetails().getPersonalNumber()) ?

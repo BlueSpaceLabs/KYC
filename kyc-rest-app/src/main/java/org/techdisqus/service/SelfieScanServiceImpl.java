@@ -4,12 +4,12 @@ package org.techdisqus.service;
 
 import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 
-import com.innovatrics.dot.integrationsamples.disapi.ApiResponse;
 import com.innovatrics.dot.integrationsamples.disapi.model.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,7 @@ import org.techdisqus.dao.GetImageDao;
 import org.techdisqus.exception.ApiExecutionException;
 import org.techdisqus.request.UserSelfieRequest;
 import org.techdisqus.response.AbstractResponse;
+import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.UserSelfieResponse;
 
 
@@ -79,6 +80,7 @@ public class SelfieScanServiceImpl extends KycBaseService
 			response.setErrorCode("SELFIE-001");
 			response.setErrorDetails("Error while creating selfie");
 		}else {
+
 			EvaluateCustomerLivenessRequest evaluateCustomerLivenessRequest = new EvaluateCustomerLivenessRequest();
 			evaluateCustomerLivenessRequest.setType(EvaluateCustomerLivenessRequest.TypeEnum.SMILE_LIVENESS);
 			EvaluateCustomerLivenessResponse evaluateCustomerLivenessResponse =
@@ -94,10 +96,19 @@ public class SelfieScanServiceImpl extends KycBaseService
 				CompletableFuture<CustomerInspectResponse> customerInspectCompletableFuture =
 						ApiHelper.execute(callback -> customerOnboardingApi.inspectAsync(customerId, callback), request);
 
-				CompletableFuture.allOf(customerInspectCompletableFuture).thenApply(unused -> {
+				CompletableFuture<GetCustomerResponse> getCustomerResponseCompletableFuture =
+						ApiHelper.execute(callback -> customerOnboardingApi.getCustomerAsync(customerId, callback), request);
+
+				CompletableFuture.allOf(customerInspectCompletableFuture, getCustomerResponseCompletableFuture).thenApply(unused -> {
 					try {
 
 						CustomerInspectResponse customerInspectResponse = customerInspectCompletableFuture.get();
+						GetCustomerResponse getCustomerResponse = getCustomerResponseCompletableFuture.get();
+
+						response.setSelfieData(List.of(new ExtractedData("selfie.age",getCustomerResponse.getCustomer().getAge().getSelfie(), "Selfie Age"),
+								new ExtractedData("selfie.gender",getCustomerResponse.getCustomer().getGender().getSelfie(), "Selfie Gender")));
+
+
 						if (customerInspectResponse.getSecurity() != null) {
 							VideoInjectionInspection videoInjectionInspection = customerInspectResponse.getSecurity().getVideoInjection();
 							if (Boolean.TRUE.equals(videoInjectionInspection.getDetected())) {
