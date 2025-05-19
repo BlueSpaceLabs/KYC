@@ -29,7 +29,7 @@ public class Configuration {
 
     public Configuration() throws IOException {
         Properties appProps = new Properties();
-        appProps.load(new FileInputStream(Configuration.class.getClassLoader().getResource("application.properties").getPath()));
+        appProps.load(getClass().getClassLoader().getResource("application.properties").openStream());
         DOT_IDENTITY_SERVICE_URL = appProps.getProperty("dot-identity-service-url");
         DOT_AUTHENTICATION_TOKEN = appProps.getProperty("dot-authentication-token");
         DOT_AUTH0_CLIENT_ID = appProps.getProperty("dot-auth0-client-id");
