@@ -45,6 +45,7 @@ public class UserConfigServiceImpl extends KycBaseService implements UserConfigS
         map.put("accountType",request.getAccountType().getKey());
         response.setUserData(map);
         response.setSpanId(getRequestId());
+        response.setRequestId(request.getRequestId());
 
         return response;
     }

@@ -38,6 +38,6 @@ public class AbstractResponse {
 
     @JsonIgnore
     public boolean isSuccess(){
-        return errorCode != null;
+        return errorCode == null;
     }
 }
