@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class UserConfigServiceImpl extends KycBaseService implements UserConfigService{
@@ -18,6 +19,7 @@ public class UserConfigServiceImpl extends KycBaseService implements UserConfigS
 
         UserConfigResponse response = UserConfigResponse.builder().build();
 
+        response.setUserData(request.getRequestInformation());
         List<AccountType> accountTypeList = new ArrayList<>();
         accountTypeList.add(getAccountType("Sim Owner","label.sim.owner",request));
         accountTypeList.add(getAccountType("Parent or Legal guardian","label.parent.or.legal.guardian",request));
@@ -29,6 +31,7 @@ public class UserConfigServiceImpl extends KycBaseService implements UserConfigS
         accountTypeList.add(getAccountType("Foreigner Persona of concern","label.foreigner.person.of.concern",request));
         response.setAccountTypes(accountTypeList);
         response.setRequestId(request.getRequestId());
+        response.setSpanId(getRequestId());
 
         return response;
     }
@@ -36,7 +39,12 @@ public class UserConfigServiceImpl extends KycBaseService implements UserConfigS
     @Override
     public AccountTypeSelectionResponse submitAccountType(AccountTypeSelectionRequest request) {
         AccountTypeSelectionResponse response =  AccountTypeSelectionResponse.builder().build();
-        response.setRequestId(request.getRequestId());
+        response.setSpanId(request.getRequestId());
+        response.setAccountType(request.getAccountType());
+        Map<String,String> map = request.getRequestInformation();
+        map.put("accountType",request.getAccountType().getKey());
+        response.setUserData(map);
+        response.setSpanId(getRequestId());
 
         return response;
     }

@@ -1,5 +1,7 @@
 package org.techdisqus.request;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
@@ -21,12 +23,20 @@ public abstract class AbstractRequest {
         ApplicationContext context = ApplicationContextUtils.getApplicationContext();
         EncryptionUtil encryptionUtil = context.getBean(EncryptionUtil.class);
         String str = encryptionUtil.decrypt(requestInformation);
-        return new ObjectMapper().convertValue(str, Map.class);
+        try {
+            return new ObjectMapper().readValue(str, new TypeReference<Map<String, String>>() {});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to deserialize decrypted userData", e);
+        }
     }
 
     public void setRequestInformation(Map<String, String> map) {
         ApplicationContext context = ApplicationContextUtils.getApplicationContext();
         EncryptionUtil encryptionUtil = context.getBean(EncryptionUtil.class);
         requestInformation = encryptionUtil.decrypt(map.toString());
+    }
+
+    public void setRequestInformation(String requestInformation) {
+        this.requestInformation = requestInformation;
     }
 }

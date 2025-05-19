@@ -1,11 +1,12 @@
 package org.techdisqus.response;
 
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ValidateAccountResponse extends AbstractResponse{
 
     private String accountIdentifier;

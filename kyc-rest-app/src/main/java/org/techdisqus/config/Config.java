@@ -2,6 +2,8 @@ package org.techdisqus.config;
 
 import com.innovatrics.dot.integrationsamples.disapi.ApiClient;
 import com.innovatrics.dot.integrationsamples.disapi.model.CustomerOnboardingApi;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.client.RestClient;
 import org.techdisqus.service.MessageProvider;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +39,14 @@ public class Config {
     public MessageProvider messageProvider(){
         MessageProvider messageProvider = new MessageProvider("en");
         return messageProvider;
+    }
+
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("i18n/messages"); // without the .properties
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
     }
 
     @Bean("disClient")
