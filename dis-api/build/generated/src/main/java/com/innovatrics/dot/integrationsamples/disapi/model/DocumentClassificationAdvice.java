@@ -50,7 +50,7 @@ import com.innovatrics.dot.integrationsamples.disapi.JSON;
 /**
  * Advice to the classification process defining the expected document type, issuing country, edition or type of travel document. This is optional input. If not provided, classification will try to match among all supported documents. If provided and document in image is different, an error is returned.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class DocumentClassificationAdvice {
   public static final String SERIALIZED_NAME_COUNTRIES = "countries";
   @SerializedName(SERIALIZED_NAME_COUNTRIES)

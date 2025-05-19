@@ -51,7 +51,7 @@ import com.innovatrics.dot.integrationsamples.disapi.JSON;
 /**
  * Details of the customer retrieved by OCR from ID document photo and by facial biometry from the selfie. The date of birth is in format YYYY-MM-DD and the gender is represented by: M for male, F for female, X for undefined.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class Customer {
   public static final String SERIALIZED_NAME_AGE = "age";
   @SerializedName(SERIALIZED_NAME_AGE)

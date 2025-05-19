@@ -55,7 +55,7 @@ import com.innovatrics.dot.integrationsamples.disapi.JSON;
 /**
  * Results of the inspection of customer&#39;s document. Please, read the chapter \&quot;ID Document Authenticity Evaluation\&quot; of the DOT documentation.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class DocumentInspectResponse {
   public static final String SERIALIZED_NAME_EXPIRED = "expired";
   @SerializedName(SERIALIZED_NAME_EXPIRED)

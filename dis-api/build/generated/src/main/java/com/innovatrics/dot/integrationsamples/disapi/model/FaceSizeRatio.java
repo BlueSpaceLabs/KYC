@@ -48,7 +48,7 @@ import com.innovatrics.dot.integrationsamples.disapi.JSON;
 /**
  * The face size ratio configuration. The minimum have to be less then the maximum.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class FaceSizeRatio {
   public static final String SERIALIZED_NAME_MIN = "min";
   @SerializedName(SERIALIZED_NAME_MIN)

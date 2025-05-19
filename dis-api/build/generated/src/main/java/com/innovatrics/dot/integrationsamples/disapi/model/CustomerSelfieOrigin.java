@@ -48,7 +48,7 @@ import com.innovatrics.dot.integrationsamples.disapi.JSON;
 /**
  * This allows to link the image from customer selfie or face from the document portrait. Do not upload the photo in Image class in this case and do not set detection properties.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class CustomerSelfieOrigin {
   public static final String SERIALIZED_NAME_LINK = "link";
   @SerializedName(SERIALIZED_NAME_LINK)

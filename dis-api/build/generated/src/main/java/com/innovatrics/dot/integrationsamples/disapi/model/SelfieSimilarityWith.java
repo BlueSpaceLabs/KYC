@@ -48,7 +48,7 @@ import com.innovatrics.dot.integrationsamples.disapi.JSON;
 /**
  * Similarity of the face between the selfie, document portrait and the liveness selfies. Please, read the chapter \&quot;Face Matching\&quot; of the DOT documentation.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class SelfieSimilarityWith {
   public static final String SERIALIZED_NAME_DOCUMENT_PORTRAIT = "documentPortrait";
   @SerializedName(SERIALIZED_NAME_DOCUMENT_PORTRAIT)

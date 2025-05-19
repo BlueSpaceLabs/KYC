@@ -50,7 +50,7 @@ import com.innovatrics.dot.integrationsamples.disapi.JSON;
 /**
  * Advice to the OCR document classification process about expected document page in the uploaded image. This is optional input. If not provided, classification will try to match both front and back pages. If provided and document page in image is different, an error is returned.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class DocumentPageClassificationAdvice {
   public static final String SERIALIZED_NAME_PAGE_TYPES = "pageTypes";
   @SerializedName(SERIALIZED_NAME_PAGE_TYPES)

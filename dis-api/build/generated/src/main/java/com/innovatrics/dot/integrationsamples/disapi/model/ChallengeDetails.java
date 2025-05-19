@@ -60,7 +60,7 @@ import com.google.gson.JsonParseException;
 
 import com.innovatrics.dot.integrationsamples.disapi.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class ChallengeDetails extends AbstractOpenApiSchema {
     private static final Logger log = Logger.getLogger(ChallengeDetails.class.getName());
 

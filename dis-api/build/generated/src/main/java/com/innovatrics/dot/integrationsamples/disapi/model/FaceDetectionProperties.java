@@ -49,7 +49,7 @@ import com.innovatrics.dot.integrationsamples.disapi.JSON;
 /**
  * The face detection properties
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-04-28T01:49:17.389448+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-05-19T13:31:50.465535+05:30[Asia/Kolkata]", comments = "Generator version: 7.8.0")
 public class FaceDetectionProperties {
   /**
    * The face detection mode. The &#x60;strict&#x60; detection detects face but returns error if multiple faces are detected in the image. The &#x60;free&#x60; detection detects faces in the image and returns the biggest one with warning if there are multiple faces detected. 
