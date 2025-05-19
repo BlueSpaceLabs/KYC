@@ -1,5 +1,0 @@
-rootProject.name = 'kyc-services'
-include 'dis-api'
-include 'kyc-core'
-include 'kyc-rest-app'
-
