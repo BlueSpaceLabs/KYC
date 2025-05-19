@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.techdisqus.service.utils.DocumentUtils;
 
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,9 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
 		UploadDocumentsResponse uploadDocumentsResponse = UploadDocumentsResponse.builder().build();
 		Map<String,String> map = request.getRequestInformation();
 		String source = DocumentUtils.visualZone;
-
+		uploadDocumentsResponse.setUserData(map);
+		uploadDocumentsResponse.setRequestId(request.getRequestId());
+		uploadDocumentsResponse.setSpanId(getRequestId());
 		boolean isPassport = false;
 		if(map.getOrDefault("isPassport", "false").equalsIgnoreCase("true")){
 			source = DocumentUtils.mrz;
@@ -59,6 +62,7 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
 					new ExtractedData("name",DocumentUtils.getName(getCustomerResponse.getCustomer(), isPassport).getFullName(), "Name"));
 
 			uploadDocumentsResponse.setDocumentExtractedDataList(extractedDataList);
+			uploadDocumentsResponse.setImages(new HashMap<>(1));
 			uploadDocumentsResponse.getImages().put("document", Base64.getEncoder().encodeToString(frontPage.getData()));
         } catch (ApiException e) {
             throw new RuntimeException(e);

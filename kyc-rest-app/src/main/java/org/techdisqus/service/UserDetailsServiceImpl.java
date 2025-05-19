@@ -7,6 +7,7 @@ import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.UserDetailsResponse;
 import org.springframework.stereotype.Component;
 import org.techdisqus.service.utils.DateUtils;
+import org.techdisqus.service.utils.DistributedULIDGenerator;
 import org.techdisqus.service.utils.DocumentUtils;
 import org.techdisqus.service.utils.Utils;
 
@@ -30,6 +31,10 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
 
         UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder().build();
 
+
+        userDetailsResponse.setRequestId(request.getRequestId());
+        userDetailsResponse.setSpanId(getRequestId());
+
         if(!validateDateOfBirthFormat(request, userDetailsResponse)) {
             return userDetailsResponse;
         }
@@ -43,12 +48,14 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         }
 
         Map<String, String> reqInfo = request.getRequestInformation();
+
         if(!utils.doFuzzyMatch(new DocumentUtils.Name(request.getFirstName(), request.getMiddleName(), request.getLastName()).getFullName(),
                 reqInfo.get("name"),reqInfo)){
             userDetailsResponse.setErrorDetails("Incorrect name");
             userDetailsResponse.setErrorCode("PERSONAL-001");
         }
-
+        reqInfo.put("externalId", DistributedULIDGenerator.generateULID());
+        userDetailsResponse.setUserData(reqInfo);
         return userDetailsResponse;
     }
 
