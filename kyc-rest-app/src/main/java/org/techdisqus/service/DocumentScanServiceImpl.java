@@ -86,7 +86,8 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
             String type = (documentType.getType() != null) ?  documentType.getType() : "";
 
             AtomicBoolean isPassport =
-                    new AtomicBoolean(type.equalsIgnoreCase("passport") || StringUtils.isNoneEmpty(documentType.getMachineReadableTravelDocument()));
+                    new AtomicBoolean(type.equalsIgnoreCase("passport") ||
+                            (StringUtils.isNotEmpty(documentType.getMachineReadableTravelDocument())) && documentType.getMachineReadableTravelDocument().toUpperCase().contains("TD") );
 
             if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
                 return setAndReturnErrorResponse("invalid.acct.selection", "Invalid document, foreigners must use  passport", response);
@@ -118,7 +119,11 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
 
                     GetCustomerResponse getCustomerResponse = customerResponseCompletableFuture.get();
 
-                    Result<Boolean> result = customerDateOfBirthValidator.validate(new ValidationContext<>(getCustomerResponse, mrz, isPassport.get(), request));
+                    String source = visualZone;
+                    if(isPassport.get()) {
+                        source = mrz;
+                    }
+                    Result<Boolean> result = customerDateOfBirthValidator.validate(new ValidationContext<>(getCustomerResponse, source, isPassport.get(), request));
 
                     if(!result.getResponse()) {
                         return setAndReturnErrorResponse("invalid.dob", "Invalid date of birth", response);
@@ -158,7 +163,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     DocumentInspectResponse documentInspectResponse = documentInspectResponseCompletableFuture.get();
 
                     ValidationContext<DocumentInspectResponse> validationContext =
-                            new ValidationContext<>(documentInspectResponse, mrz, isPassport.get(), request);
+                            new ValidationContext<>(documentInspectResponse, source, isPassport.get(), request);
                     if(documentExpiryValidator.validate(validationContext).getResponse()) {
                         setAndReturnErrorResponse("invalid.doc.expired", "Document is expired", response);
                     }
@@ -171,12 +176,6 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                         if(!mrzValidator.validate(validationContext).getResponse()) {
                             return setAndReturnErrorResponse("mrz.checksum.invalid","MRZ checksum is not valid", response);
                         }
-                    }
-
-                    String source = visualZone;
-
-                    if(isPassport.get()){
-                        source = mrz;
                     }
 
                     List<ExtractedData> extractedDataList = List.of(new ExtractedData("dob",DocumentUtils.getDateOfBirthStr(contextHolder, source), "Date of birth"),
@@ -203,12 +202,14 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     log.error("Execution is failed ", e);
                     throw new ApiExecutionException(e,request);
                 }
-            });
+            }).join();
+
+
 
             //ImageCrop documentPortrait = customerOnboardingApi.documentPortrait(customerId, null, null);
             ImageCrop frontPage = customerOnboardingApi.documentPageCrop(customerId, "front", null, null);
 
-            response.setImage(new String(frontPage.getData()));
+            response.setImage(Base64.getEncoder().encodeToString(frontPage.getData()));
 
             return response;
         }catch (Exception e) {

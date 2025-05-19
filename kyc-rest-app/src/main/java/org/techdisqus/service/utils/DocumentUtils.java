@@ -71,7 +71,7 @@ public class DocumentUtils {
         if (source.equals(mrz)) {
             return extractData(customer.getFullName(), mrz);
         }
-        return extractData(customer.getFullName(), visualZone);
+        return extractData(customer.getDateOfBirth(), visualZone);
     }
 
     public static String getFullName(ContextHolder contextHolder, String source) {
@@ -217,10 +217,13 @@ public class DocumentUtils {
 
     public static String extractData(MultiValueAttribute multiValueAttribute, String source){
 
-        if (source.equals(mrz)) {
-            return multiValueAttribute.getMrz();
+        if(multiValueAttribute != null) {
+            if (source.equals(mrz)) {
+                return multiValueAttribute.getMrz();
+            }
+            return multiValueAttribute.getVisualZone();
         }
-        return multiValueAttribute.getVisualZone();
+        return "";
     }
 
     public static String extractData(BiometricMultiValueAttribute multiValueAttribute, String source){

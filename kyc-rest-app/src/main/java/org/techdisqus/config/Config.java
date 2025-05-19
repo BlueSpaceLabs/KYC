@@ -63,6 +63,6 @@ public class Config {
 
     @Bean("token")
     public String token(){
-        return "RElTX2V2YWxfNTA5Ok9wMmMwY2Q0bVBvSHFqb2RQS1hmR2ZkSmx4WXp5MXhT";
+        return "RElTX2V2YWxfNTM5OndZckxOM0dMQnZjMUVVRlNVbHdXcGVyMlJYNE1DVXlX";
     }
 }
