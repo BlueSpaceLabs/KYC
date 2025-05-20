@@ -1,14 +1,19 @@
 package org.techdisqus.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 
-import com.innovatrics.dot.integrationsamples.disapi.model.GetCustomerResponse;
+import com.innovatrics.dot.integrationsamples.disapi.model.*;
 import lombok.SneakyThrows;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +31,7 @@ import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.RegisterUserResponse;
 import org.techdisqus.service.RegistrationUtil.SimActivationAndDocumentUploadResult;
 import org.techdisqus.service.RegistrationUtil.StatusHolder;
+import org.techdisqus.service.util.ApiHelper;
 import org.techdisqus.service.utils.DateUtils;
 import org.techdisqus.service.utils.RegistrationStatusUtil;
 
@@ -168,6 +174,57 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
 
 
             response.setSimRegistrationDate(DateUtils.getDate());
+
+            CompletableFuture<DocumentInspectResponse> documentInspectResponseCompletableFuture =
+                    ApiHelper.execute(callback -> customerOnboardingApi.documentInspectAsync(customerId, callback), request);
+
+            CompletableFuture<DocumentInspectDiscloseResponse> documentInspectDiscloseResponseCompletableFuture =
+                    ApiHelper.execute(callback -> customerOnboardingApi.documentInspectDiscloseAsync(customerId, callback), request);
+
+            CompletableFuture<CustomerInspectResponse> customerInspectResponseCompletableFuture =
+                    ApiHelper.execute(callback -> customerOnboardingApi.inspectAsync(customerId, callback), request);
+
+            CompletableFuture<ImageCrop> imageCropCompletableFuture =
+                    ApiHelper.execute(callback -> customerOnboardingApi.getSelfieImageAsync(customerId,callback), request);
+
+            CompletableFuture<ImageCrop> documentPageCropCompletableFuture =
+                    ApiHelper.execute(callback -> customerOnboardingApi.documentPageCropAsync(customerId,"front",null,null,callback), request);
+
+            CompletableFuture
+                    .allOf(documentInspectResponseCompletableFuture, documentInspectDiscloseResponseCompletableFuture,
+                            customerInspectResponseCompletableFuture, imageCropCompletableFuture, documentPageCropCompletableFuture )
+                    .thenApply(unused -> {
+                        try {
+                            DocumentInspectResponse documentInspectResponse = documentInspectResponseCompletableFuture.get();
+                            DocumentInspectDiscloseResponse documentInspectDiscloseResponse = documentInspectDiscloseResponseCompletableFuture.get();
+                            CustomerInspectResponse customerInspectResponse = customerInspectResponseCompletableFuture.get();
+                            Path path = Paths.get("/tmp/"+customerId+".txt");
+                            Files.write(path, getCustomerResponse.toJson().getBytes(), StandardOpenOption.CREATE);
+                            Files.write(path, "\n****************************************\n".getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, documentInspectResponse.toJson().getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, "\n****************************************\n".getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, documentInspectDiscloseResponse.toJson().getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, "\n****************************************\n".getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, customerInspectResponse.toJson().getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, "\n****************************************\n".getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, imageCropCompletableFuture.get().toJson().getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, "\n****************************************\n".getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, documentPageCropCompletableFuture.get().toJson().getBytes(), StandardOpenOption.APPEND);
+                            Files.write(path, "\n****************************************\n".getBytes(), StandardOpenOption.APPEND);
+
+                        } catch (InterruptedException e) {
+                            logger.error("request is interrupted ", e);
+                           // throw new ApiExecutionException(e,request);
+                        } catch (ExecutionException e) {
+                            logger.error("execution is failed ", e);
+                           // throw new ApiExecutionException(e,request);
+                        } catch (IOException e) {
+                            logger.error("Error while writing to file", e);
+                           // throw new ApiExecutionException(e,request);
+                        }
+
+                        return unused;
+                    }).join();
 
             if (saveToTrustStoreDaoResponse == null) {
 
