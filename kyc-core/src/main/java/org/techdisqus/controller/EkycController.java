@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/ekyc")
+@CrossOrigin(origins = "*")
 public class EkycController {
 
     @Autowired
