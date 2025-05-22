@@ -167,7 +167,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     ValidationContext<DocumentInspectResponse> validationContext =
                             new ValidationContext<>(documentInspectResponse, source, isPassport.get(), request);
                     if(documentExpiryValidator.validate(validationContext).getResponse()) {
-                        setAndReturnErrorResponse("invalid.doc.expired", "Document is expired", response);
+                        return setAndReturnErrorResponse("invalid.doc.expired", "Document is expired", response);
                     }
 
                     if(!lowOcrConfidenceTextsValidator.validate(validationContext).getResponse()) {

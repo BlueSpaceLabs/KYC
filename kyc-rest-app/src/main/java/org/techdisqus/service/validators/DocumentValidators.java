@@ -121,7 +121,7 @@ public class DocumentValidators {
                 }
             }
 
-            return new Result<>(true, false);
+            return new Result<>(false, false);
         }
     }
 
