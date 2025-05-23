@@ -6,7 +6,7 @@ import com.innovatrics.dot.integrationsamples.disapi.model.CreateDocumentRequest
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.techdisqus.exception.ApiExecutionException;
-import org.techdisqus.exception.InvalidDocumentException;
+import org.techdisqus.exception.BadRequestException;
 import org.techdisqus.request.DocumentScanRequest;
 import org.techdisqus.response.DocumentScanResponse;
 import org.techdisqus.response.ExtractedData;
@@ -76,12 +76,13 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
 
             if (documentFrontError != null) {
                 log.error(documentFrontError.getValue());
+                return setAndReturnErrorResponse("error.while.doc.scan", "Document scan error", response);
             }
 
             DocumentType documentType = createDocumentResponseFront.getDocumentType();
 
             if(documentType == null || "NOT_SUPPORTED".equalsIgnoreCase(documentType.getSupportLevel())) {
-                throw new InvalidDocumentException("Document is not supported", "Document is not supported", "doc.is.not.supported", request);
+                throw new BadRequestException("Document is not supported", "Document is not supported", "doc.is.not.supported", request);
             }
 
             String type = (documentType.getType() != null) ?  documentType.getType() : "";

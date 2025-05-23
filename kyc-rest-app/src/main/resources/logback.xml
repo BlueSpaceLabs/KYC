@@ -1,0 +1,50 @@
+<configuration scan="true">
+
+    <include resource="org/springframework/boot/logging/logback/base.xml" /> <!-- Optional if using Spring Boot -->
+
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <!-- Timestamp in ISO8601 format -->
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+
+                <!-- Log level -->
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+
+                <!-- Logger name -->
+                <loggerName>
+                    <fieldName>logger</fieldName>
+                </loggerName>
+
+                <!-- Thread name -->
+                <threadName>
+                    <fieldName>thread</fieldName>
+                </threadName>
+
+                <!-- The log message -->
+                <message>
+                    <fieldName>message</fieldName>
+                </message>
+
+                <!-- Stacktrace (if any) -->
+                <stackTrace>
+                    <fieldName>stack_trace</fieldName>
+                </stackTrace>
+
+                <!-- MDC context (useful for tracing requestId, etc.) -->
+                <mdc />
+
+                <!-- Add custom fields if needed -->
+                <arguments />
+            </providers>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="JSON_CONSOLE" />
+    </root>
+</configuration>

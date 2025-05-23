@@ -24,12 +24,19 @@ dependencies {
 
     // Spring Boot Starter Security - for securing your application
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
     // SLF4J API for logging
-    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
+
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
     // Logback implementation of SLF4J
+    implementation 'org.slf4j:slf4j-api:1.7.32'
     implementation 'ch.qos.logback:logback-classic:1.5.13'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
     // Optionally, if you need SLF4J binding for Logback
     implementation 'org.slf4j:slf4j-log4j13:1.0.1'
