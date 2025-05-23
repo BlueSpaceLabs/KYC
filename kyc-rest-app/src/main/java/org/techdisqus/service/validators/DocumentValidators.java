@@ -3,16 +3,13 @@ package org.techdisqus.service.validators;
 import com.innovatrics.dot.integrationsamples.disapi.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.techdisqus.exception.InvalidDocumentException;
+import org.techdisqus.exception.BadRequestException;
 import org.techdisqus.request.AbstractRequest;
 import org.techdisqus.service.utils.DateUtils;
 import org.techdisqus.service.utils.DocumentUtils;
 import org.techdisqus.util.Result;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 import static org.techdisqus.service.utils.DocumentUtils.*;
 
@@ -91,12 +88,12 @@ public class DocumentValidators {
                 }
 
                 if(StringUtils.isEmpty(nationality)) {
-                    throw new InvalidDocumentException("Cound not get the natioanlity", "Cound not get the natioanlity",
+                    throw new BadRequestException("Cound not get the natioanlity", "Cound not get the natioanlity",
                             "nationality.is.missing", validationContext.request());
                 }
 
                 if(nationality.length() == 3 && !isoCountries.contains(nationality)) {
-                    throw new InvalidDocumentException("Invalid nationality", "Invalid nationality",
+                    throw new BadRequestException("Invalid nationality", "Invalid nationality",
                             "nationality.is.invalid", validationContext.request());
                 }
 
@@ -161,14 +158,14 @@ public class DocumentValidators {
             if(validationContext.obj() != null) {
 
                 DocumentInspectResponse documentInspectResponse = validationContext.obj();
-                Boolean isMrzValid = documentInspectResponse.getMrzInspection().getValid();
-
-                if (isMrzValid != null) {
-                    return new Result<>(isMrzValid, true);
+                if (documentInspectResponse.getMrzInspection() != null){
+                    if (!documentInspectResponse.getMrzInspection().getValid()) {
+                        return new Result<>(false, true);
+                    }
                 }
             }
 
-            return new Result<>(null, true);
+            return new Result<>(true, true);
         }
     }
 
