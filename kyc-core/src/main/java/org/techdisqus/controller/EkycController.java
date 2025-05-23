@@ -59,7 +59,10 @@ public class EkycController {
     }
 
     @GetMapping(value = "/userConfig")
-    public ResponseEntity<UserConfigResponse> getUserConfig(@RequestBody UserConfigRequest request) {
+    public ResponseEntity<UserConfigResponse> getUserConfig(KycRequestHeaders kycRequestHeaders) {
+        UserConfigRequest request = new UserConfigRequest();
+        request.setLocale(kycRequestHeaders.getLocale());
+        request.setRequestInformation(kycRequestHeaders.getRequestInformation());
         UserConfigResponse response = userConfigService.getAccountTypes(request);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
