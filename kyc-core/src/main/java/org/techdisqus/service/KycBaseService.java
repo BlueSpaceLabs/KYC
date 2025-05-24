@@ -158,6 +158,10 @@ public abstract class KycBaseService implements RetryHandler{
         return UUID.randomUUID().toString();
     }
 
+    protected String getSessionId() {
+        return UUID.randomUUID().toString();
+    }
+
     public Locale toLocale(AbstractRequest request) {
         return Locale.forLanguageTag(request.getLocale());
     }
@@ -165,7 +169,6 @@ public abstract class KycBaseService implements RetryHandler{
     protected <T extends AbstractResponse> T setAndReturnErrorResponse(String errorCode, String errorDesc, T response) {
         response.setErrorCode(errorCode);
         response.setErrorDetails(errorDesc);
-        response.setSpanId(UUID.randomUUID().toString());
         return response;
     }
 

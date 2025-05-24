@@ -6,6 +6,7 @@ import com.innovatrics.dot.integrationsamples.disapi.model.CustomerOnboardingApi
 import com.innovatrics.dot.integrationsamples.disapi.model.GetCustomerResponse;
 import com.innovatrics.dot.integrationsamples.disapi.model.ImageCrop;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.techdisqus.request.UploadDocumentsRequest;
 import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.UploadDocumentsResponse;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 @Primary
 public class UserAdditionalDocumentServiceImpl extends KycBaseService implements UserAdditionalDocumentService {
@@ -33,12 +35,12 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
 	public UploadDocumentsResponse uploadDocs(UploadDocumentsRequest request) {
 
 
+		log.info("upload additional docs started");
 		UploadDocumentsResponse uploadDocumentsResponse = UploadDocumentsResponse.builder().build();
 		Map<String,String> map = request.getRequestInformation();
 		String source = DocumentUtils.visualZone;
 		uploadDocumentsResponse.setUserData(map);
-		uploadDocumentsResponse.setRequestId(request.getRequestId());
-		uploadDocumentsResponse.setSpanId(getRequestId());
+
 		boolean isPassport = false;
 		if(map.getOrDefault("isPassport", "false").equalsIgnoreCase("true")){
 			source = DocumentUtils.mrz;
@@ -68,6 +70,7 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
             throw new RuntimeException(e);
         }
 
+		log.info("upload additional docs ended");
 
 		return uploadDocumentsResponse;
 	}

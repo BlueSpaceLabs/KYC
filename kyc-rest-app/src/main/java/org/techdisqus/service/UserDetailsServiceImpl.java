@@ -1,6 +1,7 @@
 package org.techdisqus.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.techdisqus.request.UserDetailsRequest;
 import org.techdisqus.response.ExtractedData;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class UserDetailsServiceImpl extends KycBaseService implements UserDetailsService {
 
     @Autowired
@@ -29,11 +31,8 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
     @Override
     public UserDetailsResponse submitPersonalDetails(UserDetailsRequest request) {
 
+        log.info("user details submit started");
         UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder().build();
-
-
-        userDetailsResponse.setRequestId(request.getRequestId());
-        userDetailsResponse.setSpanId(getRequestId());
 
         if(!validateDateOfBirthFormat(request, userDetailsResponse)) {
             return userDetailsResponse;
@@ -56,6 +55,9 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         }
         reqInfo.put("externalId", DistributedULIDGenerator.generateULID());
         userDetailsResponse.setUserData(reqInfo);
+
+        log.info("user details submit ended");
+
         return userDetailsResponse;
     }
 
@@ -70,12 +72,16 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         if("".equals(dateOfBirth)){
             response.setErrorCode("USER-002");
             response.setErrorDetails("Incorrect date of birth");
+            log.info("date of birth is null");
+
             return false;
         }
 
         if(!DateUtils.isValidDateFormat(dateOfBirth)){
             response.setErrorCode("USER-003");
             response.setErrorDetails("Incorrect date of birth");
+            log.info("date of birth is is not valid {}", dateOfBirth);
+
             return false;
         }
 
@@ -92,12 +98,15 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         if("".equals(gender)){
             response.setErrorCode("USER-003");
             response.setErrorDetails("Incorrect gender");
+            log.info("Gender is null");
             return false;
         }
 
         if(!"M".equals(gender) && !"F".equals(gender)){
             response.setErrorCode("USER-004");
             response.setErrorDetails("Incorrect gender");
+            log.info("Gender is not valid {} ", gender);
+
             return false;
         }
 
@@ -112,7 +121,7 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
 
         LocalDate dateOfBirth = LocalDate.parse(dateOfBirthStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         int diffYears = Period.between(dateOfBirth, ZonedDateTime.now(ZoneId.of("Asia/Manila")).toLocalDate()).getYears();
-        
+        log.info("Age diff is  {} ", diffYears);
         if (diffYears < 18 ) {
             String message = messageProvider.getMessage("error.age.invalid", request.getLocale());
             response.setErrorCode("USER-005");

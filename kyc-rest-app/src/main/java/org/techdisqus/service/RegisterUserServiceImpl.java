@@ -29,11 +29,13 @@ import org.techdisqus.request.Document;
 import org.techdisqus.request.RegisterUserRequest;
 import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.RegisterUserResponse;
-import org.techdisqus.service.RegistrationUtil.SimActivationAndDocumentUploadResult;
-import org.techdisqus.service.RegistrationUtil.StatusHolder;
+import org.techdisqus.service.utils.RegistrationUtil;
+import org.techdisqus.service.utils.RegistrationUtil.SimActivationAndDocumentUploadResult;
+import org.techdisqus.service.utils.RegistrationUtil.StatusHolder;
 import org.techdisqus.service.util.ApiHelper;
 import org.techdisqus.service.utils.DateUtils;
 import org.techdisqus.service.utils.RegistrationStatusUtil;
+import org.techdisqus.service.utils.UpdateCustomAttributesUtil;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -289,7 +291,7 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
 
 
                     response.setStatus(status);
-                    response.setRequestId(externalId);
+                    response.setReferenceId(externalId);
                     response.setStatusMessage("registration is successful for externalId " + externalId);
                 } else {
 

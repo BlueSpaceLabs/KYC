@@ -7,6 +7,7 @@ import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestClient;
@@ -21,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class Config {
 
     @Bean(name = "encryptionCredentials")

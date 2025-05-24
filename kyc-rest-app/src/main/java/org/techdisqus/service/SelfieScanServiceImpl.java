@@ -64,8 +64,6 @@ public class SelfieScanServiceImpl extends KycBaseService
 
 		Map<String, String> reqInfo = request.getRequestInformation();
 		String customerId = reqInfo.get("customerId");
-		response.setRequestId(reqInfo.get("requestId"));
-		response.setSpanId(getRequestId());
 		response.setUserData(reqInfo);
 
 		if(reqInfo.containsKey("livenessCreated")) {
@@ -79,6 +77,7 @@ public class SelfieScanServiceImpl extends KycBaseService
 		if(createCustomerLivenessRecordResponse.getErrorCode() != null) {
 			response.setErrorCode("SELFIE-001");
 			response.setErrorDetails("Error while creating selfie");
+			return response;
 		}else {
 
 			EvaluateCustomerLivenessRequest evaluateCustomerLivenessRequest = new EvaluateCustomerLivenessRequest();
@@ -88,10 +87,10 @@ public class SelfieScanServiceImpl extends KycBaseService
 
 			if(evaluateCustomerLivenessResponse.getErrorCode() != null) {
 				log.error("Error while evaluating liveness {}" , evaluateCustomerLivenessResponse);
-				response.setErrorCode(evaluateCustomerLivenessResponse.getErrorCode().getValue());
+				response.setErrorCode("SELFIE-002");
 				response.setErrorDetails("Error while evaluating smile liveness");
+				return response;
 			}else {
-
 
 				CompletableFuture<CustomerInspectResponse> customerInspectCompletableFuture =
 						ApiHelper.execute(callback -> customerOnboardingApi.inspectAsync(customerId, callback), request);
@@ -114,6 +113,7 @@ public class SelfieScanServiceImpl extends KycBaseService
 							if (Boolean.TRUE.equals(videoInjectionInspection.getDetected())) {
 								response.setErrorCode("SELFIE-002");
 								response.setErrorDetails("Video injection detected");
+								return response;
 							}
 						}
 
@@ -121,21 +121,25 @@ public class SelfieScanServiceImpl extends KycBaseService
 							if (Boolean.TRUE.equals(customerInspectResponse.getSelfieInspection().getHasMask())) {
 								response.setErrorCode("SELFIE-003");
 								response.setErrorDetails("User wearing mask");
+								return response;
 							}
 
 							if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getSimilarityWith().getDocumentPortrait())) {
 								response.setErrorCode("SELFIE-004");
 								response.setErrorDetails("Portrait and selfie does not match");
+								return response;
 							}
 
 							if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getSimilarityWith().getLivenessSelfies())) {
 								response.setErrorCode("SELFIE-005");
 								response.setErrorDetails("liveness photo and selfie does not match");
+								return response;
 							}
 
 							if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getGenderConsistency().getDocumentPortrait())) {
 								response.setErrorCode("SELFIE-006");
 								response.setErrorDetails("Gender does not match");
+								return response;
 							}
 
 							Integer age = customerInspectResponse.getSelfieInspection().getAgeEstimate();
@@ -164,6 +168,7 @@ public class SelfieScanServiceImpl extends KycBaseService
 					log.error("Error while setting selfie {}", createSelfieResponse);
 					response.setErrorDetails(createSelfieResponse.getErrorCode().getValue());
 					response.setErrorCode("SELFIE-007");
+					return response;
 				}
 
 				CreateCustomerLivenessSelfieRequest createCustomerLivenessSelfieRequest = new CreateCustomerLivenessSelfieRequest();

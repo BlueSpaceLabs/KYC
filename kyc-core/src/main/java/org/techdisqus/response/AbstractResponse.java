@@ -8,12 +8,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.techdisqus.util.ApplicationContextUtils;
 import org.techdisqus.util.EncryptionUtil;
 
 import java.util.Map;
 
+@Slf4j
 @Data
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -23,7 +25,6 @@ public class AbstractResponse {
     private String errorDetails;
     private String userData;
     private String requestId;
-    private String spanId;
 
     public void setUserData(Map<String, String> map) {
         ApplicationContext context = ApplicationContextUtils.getApplicationContext();
@@ -38,6 +39,9 @@ public class AbstractResponse {
 
     @JsonIgnore
     public boolean isSuccess(){
+        if(errorCode != null) {
+            log.info("Error while processing the request and error details are {}", this);
+        }
         return errorCode == null;
     }
 }

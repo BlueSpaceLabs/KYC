@@ -10,6 +10,7 @@ import java.util.List;
 @SuperBuilder
 public class RegisterUserResponse extends AbstractResponse{
 
+    private String referenceId;
     private String status;
     private List<String> rejectReasons;
     private String simRegistrationDate;
