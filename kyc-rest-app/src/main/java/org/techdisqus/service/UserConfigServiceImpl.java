@@ -1,10 +1,7 @@
 package org.techdisqus.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.techdisqus.request.AbstractRequest;
-import org.techdisqus.request.AccountType;
-import org.techdisqus.request.AccountTypeSelectionRequest;
-import org.techdisqus.request.UserConfigRequest;
+import org.techdisqus.request.*;
 import org.techdisqus.response.AccountTypeSelectionResponse;
 import org.techdisqus.response.UserConfigResponse;
 import org.springframework.stereotype.Component;
@@ -17,7 +14,7 @@ import java.util.Map;
 @Slf4j
 public class UserConfigServiceImpl extends KycBaseService implements UserConfigService{
     @Override
-    public UserConfigResponse getAccountTypes(UserConfigRequest request) {
+    public UserConfigResponse getAccountTypes(UserConfigRequest request, KycRequestHeaders kycRequestHeaders) {
 
         log.info("getting account types started");
 
@@ -40,7 +37,7 @@ public class UserConfigServiceImpl extends KycBaseService implements UserConfigS
     }
 
     @Override
-    public AccountTypeSelectionResponse submitAccountType(AccountTypeSelectionRequest request) {
+    public AccountTypeSelectionResponse submitAccountType(AccountTypeSelectionRequest request, KycRequestHeaders kycRequestHeaders) {
         log.info("submit account types started");
         AccountTypeSelectionResponse response =  AccountTypeSelectionResponse.builder().build();
         response.setAccountType(request.getAccountType());

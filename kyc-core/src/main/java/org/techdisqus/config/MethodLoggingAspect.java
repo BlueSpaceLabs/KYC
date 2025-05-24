@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.techdisqus.request.AbstractRequest;
+import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.ValidateAccountRequest;
 import org.techdisqus.response.AbstractResponse;
 import org.techdisqus.util.ApplicationContextUtils;
@@ -50,7 +51,15 @@ public class MethodLoggingAspect {
                 String hashedId = DigestUtils.md5DigestAsHex(identifier.getBytes());
                 MDC.put("identifier", hashedId);
                 MDC.put("sessionId", reqInformation.get("sessionId"));
+
+                if(args.length == 2 && args[1] != null && args[1] instanceof KycRequestHeaders kycRequestHeaders) {
+                    if(request.getRequestInformation() == null && kycRequestHeaders.getRequestInformation() != null) {
+                        request.setRequestInformation(kycRequestHeaders.getRequestInformation());
+                    }
+                }
             }
+
+
 
             Object result = joinPoint.proceed();
             if(result instanceof AbstractResponse response) {

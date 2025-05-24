@@ -3,6 +3,7 @@ package org.techdisqus.service;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.ValidateAccountRequest;
 import org.techdisqus.response.ValidateAccountResponse;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class VerifyAccountServiceImpl extends KycBaseService implements ValidateAccountService{
 
     @Override
-    public ValidateAccountResponse verify(ValidateAccountRequest request) {
+    public ValidateAccountResponse verify(ValidateAccountRequest request, KycRequestHeaders kycRequestHeaders) {
 
         log.info("account validation started");
         ValidateAccountResponse response = ValidateAccountResponse.builder().build();

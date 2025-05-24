@@ -6,6 +6,6 @@ import org.techdisqus.response.*;
 
 public interface DocumentScanService {
 
-    DocumentScanResponse scanDocument(DocumentScanRequest request) throws ApiException;
+    DocumentScanResponse scanDocument(DocumentScanRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException;
 
 }

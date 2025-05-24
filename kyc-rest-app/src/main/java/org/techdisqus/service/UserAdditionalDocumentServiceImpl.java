@@ -7,6 +7,7 @@ import com.innovatrics.dot.integrationsamples.disapi.model.GetCustomerResponse;
 import com.innovatrics.dot.integrationsamples.disapi.model.ImageCrop;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.UploadDocumentsRequest;
 import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.UploadDocumentsResponse;
@@ -32,7 +33,7 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
 
 	@SneakyThrows
     @Override
-	public UploadDocumentsResponse uploadDocs(UploadDocumentsRequest request) {
+	public UploadDocumentsResponse uploadDocs(UploadDocumentsRequest request, KycRequestHeaders kycRequestHeaders) {
 
 
 		log.info("upload additional docs started");

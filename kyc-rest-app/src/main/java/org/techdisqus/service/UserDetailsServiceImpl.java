@@ -3,6 +3,7 @@ package org.techdisqus.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.UserDetailsRequest;
 import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.UserDetailsResponse;
@@ -29,7 +30,7 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
     private Utils utils;
 
     @Override
-    public UserDetailsResponse submitPersonalDetails(UserDetailsRequest request) {
+    public UserDetailsResponse submitPersonalDetails(UserDetailsRequest request, KycRequestHeaders kycRequestHeaders) {
 
         log.info("user details submit started");
         UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder().build();

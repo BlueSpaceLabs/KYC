@@ -9,6 +9,7 @@ import org.slf4j.MDC;
 import org.techdisqus.exception.ApiExecutionException;
 import org.techdisqus.exception.BadRequestException;
 import org.techdisqus.request.DocumentScanRequest;
+import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.response.DocumentScanResponse;
 import org.techdisqus.response.ExtractedData;
 import org.techdisqus.service.util.ApiHelper;
@@ -56,7 +57,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
     private MrzValidator mrzValidator;
 
     @Override
-    public DocumentScanResponse scanDocument(DocumentScanRequest request) {
+    public DocumentScanResponse scanDocument(DocumentScanRequest request, KycRequestHeaders kycRequestHeaders) {
 
         log.info("scan document started");
 
