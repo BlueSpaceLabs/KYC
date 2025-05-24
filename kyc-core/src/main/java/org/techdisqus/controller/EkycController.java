@@ -99,7 +99,7 @@ public class EkycController {
     @PostMapping(value = "/evaluateUserSelfie", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserSelfieResponse> evaluateSelfie(@RequestBody UserSelfieRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException{
-        UserSelfieResponse response = selfieScanService.scanSelfie(request);
+        UserSelfieResponse response = selfieScanService.scanSelfie(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);

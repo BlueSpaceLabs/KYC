@@ -19,6 +19,9 @@ public abstract class AbstractRequest {
 
     private String locale;
 
+    public String getRequestInformationString(){
+        return requestInformation;
+    }
     public Map<String, String> getRequestInformation() {
         ApplicationContext context = ApplicationContextUtils.getApplicationContext();
         EncryptionUtil encryptionUtil = context.getBean(EncryptionUtil.class);
