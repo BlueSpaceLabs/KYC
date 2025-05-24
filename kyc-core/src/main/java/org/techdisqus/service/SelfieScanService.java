@@ -1,9 +1,10 @@
 package org.techdisqus.service;
 
+import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.UserSelfieRequest;
 import org.techdisqus.response.UserSelfieResponse;
 
 public interface SelfieScanService {
 
-    UserSelfieResponse scanSelfie(UserSelfieRequest request);
+    UserSelfieResponse scanSelfie(UserSelfieRequest request, KycRequestHeaders kycRequestHeaders);
 }

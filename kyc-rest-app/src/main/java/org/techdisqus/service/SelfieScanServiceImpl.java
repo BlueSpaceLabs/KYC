@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.techdisqus.dao.GetImageDao;
 import org.techdisqus.exception.ApiExecutionException;
+import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.UserSelfieRequest;
 import org.techdisqus.response.AbstractResponse;
 import org.techdisqus.response.ExtractedData;
@@ -57,7 +58,7 @@ public class SelfieScanServiceImpl extends KycBaseService
 
 	@SneakyThrows
     @Override
-	public UserSelfieResponse scanSelfie(UserSelfieRequest request) {
+	public UserSelfieResponse scanSelfie(UserSelfieRequest request, KycRequestHeaders kycRequestHeaders) {
 		log.info("selfie scan started");
 
 		UserSelfieResponse response =  UserSelfieResponse.builder().build();
