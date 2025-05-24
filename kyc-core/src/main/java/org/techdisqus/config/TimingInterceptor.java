@@ -26,7 +26,7 @@ public class TimingInterceptor implements Interceptor {
             MDC.put("endpoint", request.url().toString());
             MDC.put("executionTime", timeTaken + "");
             // Log and record downstream time
-            logger.info("HTTP {} {} took {} ms",  request.method(), request.url(), timeTaken);
+            logger.info("HTTP {} {} status code {} isSuccess {} took {} ms",  request.method(), request.url(), response.code(), response.isSuccessful(), timeTaken);
 
             return response;
         } catch (Exception ex) {
