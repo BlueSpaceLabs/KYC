@@ -1,4 +1,4 @@
-package org.techdisqus.service;
+package org.techdisqus.service.utils;
 
 
 import com.innovatrics.dot.integrationsamples.disapi.model.GetCustomerResponse;
@@ -19,10 +19,7 @@ import org.techdisqus.dao.response.custom.attributes.TrustFactor;
 import org.techdisqus.request.Document;
 import org.techdisqus.request.RegisterUserRequest;
 import org.techdisqus.response.ExtractedData;
-import org.techdisqus.service.utils.RegistrationStatusUtil;
-import org.techdisqus.service.utils.SimActivationUtil;
-import org.techdisqus.service.utils.UploadDocumentUtil;
-import org.techdisqus.service.utils.Utils;
+import org.techdisqus.service.KycBaseService;
 
 import javax.annotation.Resource;
 import java.util.Collections;

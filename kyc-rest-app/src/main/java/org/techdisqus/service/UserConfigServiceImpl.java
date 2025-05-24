@@ -1,5 +1,6 @@
 package org.techdisqus.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.techdisqus.request.AbstractRequest;
 import org.techdisqus.request.AccountType;
 import org.techdisqus.request.AccountTypeSelectionRequest;
@@ -13,9 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class UserConfigServiceImpl extends KycBaseService implements UserConfigService{
     @Override
     public UserConfigResponse getAccountTypes(UserConfigRequest request) {
+
+        log.info("getting account types started");
 
         UserConfigResponse response = UserConfigResponse.builder().build();
 
@@ -30,22 +34,20 @@ public class UserConfigServiceImpl extends KycBaseService implements UserConfigS
         accountTypeList.add(getAccountType("Foreigner Resident","label.foreigner.resident",request));
         accountTypeList.add(getAccountType("Foreigner Persona of concern","label.foreigner.person.of.concern",request));
         response.setAccountTypes(accountTypeList);
-        response.setRequestId(request.getRequestId());
-        response.setSpanId(getRequestId());
 
+        log.info("getting account types ended");
         return response;
     }
 
     @Override
     public AccountTypeSelectionResponse submitAccountType(AccountTypeSelectionRequest request) {
+        log.info("submit account types started");
         AccountTypeSelectionResponse response =  AccountTypeSelectionResponse.builder().build();
-        response.setSpanId(request.getRequestId());
         response.setAccountType(request.getAccountType());
         Map<String,String> map = request.getRequestInformation();
         map.put("accountType",request.getAccountType().getKey());
         response.setUserData(map);
-        response.setSpanId(getRequestId());
-        response.setRequestId(request.getRequestId());
+        log.info("submit account types ended");
 
         return response;
     }

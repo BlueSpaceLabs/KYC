@@ -5,10 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.techdisqus.response.AbstractResponse;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,30 +14,43 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<?> handleBadRequest(BadRequestException ex) {
-        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return buildResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        return buildResponse("Invalid parameter: " + ex.getName(), HttpStatus.BAD_REQUEST);
+        return buildResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ApiExecutionException.class)
     public ResponseEntity<?> handleApiExecException(MethodArgumentTypeMismatchException ex) {
-        return buildResponse("Invalid parameter: " + ex.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericException(Exception ex) {
-        return buildResponse("Internal server error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<Map<String, Object>> buildResponse(String message, HttpStatus status) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", status.getReasonPhrase());
-        body.put("message", message);
-        return new ResponseEntity<>(body, status);
+    private ResponseEntity<AbstractResponse> buildResponse(BaseException exception, HttpStatus status) {
+
+        AbstractResponse response = AbstractResponse.builder()
+                .errorDetails(exception.getErrorMessage())
+                .errorCode(exception.getErrorCode())
+                .requestId(exception.getRequest().getRequestId()).build();
+        response.setUserData(exception.getRequest().getRequestInformation());
+
+
+        return new ResponseEntity<>(response, status);
+    }
+
+    private ResponseEntity<AbstractResponse> buildResponse(Exception exception, HttpStatus status) {
+
+        AbstractResponse response = AbstractResponse.builder()
+                .errorDetails(exception.getMessage())
+                .errorCode(exception.getMessage())
+                .build();
+
+        return new ResponseEntity<>(response, status);
     }
 }

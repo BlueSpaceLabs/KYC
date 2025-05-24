@@ -2,8 +2,7 @@ package org.techdisqus.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -11,9 +10,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
+@Slf4j
 public class ApiLoggingInterceptor implements HandlerInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApiLoggingInterceptor.class);
 
     private final AtomicInteger successCount = new AtomicInteger();
     private final AtomicInteger errorCount = new AtomicInteger();
@@ -24,25 +23,29 @@ public class ApiLoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        MDC.put("reqInfo", request.getHeader("x-requestInformation"));
         startTime.set(System.currentTimeMillis());
-        logger.info("API START: {} {}", request.getMethod(), request.getRequestURI());
+        log.info("API START: {} {}", request.getMethod(), request.getRequestURI());
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        long duration = System.currentTimeMillis() - startTime.get();
-        int status = response.getStatus();
+        try {
+            long duration = System.currentTimeMillis() - startTime.get();
+            int status = response.getStatus();
 
-        if (status >= 200 && status < 300) {
-            successCount.incrementAndGet();
-            logger.info("API SUCCESS: {} {} [{}] ({} ms)", request.getMethod(), request.getRequestURI(), status, duration);
-        } else {
-            errorCount.incrementAndGet();
-            logger.warn("API ERROR: {} {} [{}] ({} ms)", request.getMethod(), request.getRequestURI(), status, duration);
+            if (status >= 200 && status < 300) {
+                successCount.incrementAndGet();
+                log.info("API SUCCESS: {} {} [{}] ({} ms)", request.getMethod(), request.getRequestURI(), status, duration);
+            } else {
+                errorCount.incrementAndGet();
+                log.warn("API ERROR: {} {} [{}] ({} ms)", request.getMethod(), request.getRequestURI(), status, duration);
+            }
+        }finally {
+            startTime.remove();
+            MDC.clear();
         }
-
-        startTime.remove();
     }
 
     // Optional: expose counts

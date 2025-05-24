@@ -5,6 +5,7 @@ import com.innovatrics.dot.integrationsamples.disapi.model.*;
 import com.innovatrics.dot.integrationsamples.disapi.model.CreateDocumentRequest.SourcesEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.techdisqus.exception.ApiExecutionException;
 import org.techdisqus.exception.BadRequestException;
 import org.techdisqus.request.DocumentScanRequest;
@@ -57,10 +58,10 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
     @Override
     public DocumentScanResponse scanDocument(DocumentScanRequest request) {
 
+        log.info("scan document started");
+
         DocumentScanResponse response =  DocumentScanResponse.builder().build();
-        response.setRequestId(getRequestId());
         Map<String, String> reqInfo = request.getRequestInformation();
-        response.setSpanId(reqInfo.get("spanId"));
 
         try {
             final CreateCustomerResponse customerResponse = customerOnboardingApi.createCustomer();
@@ -75,23 +76,35 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
             CreateDocumentPageResponse.ErrorCodeEnum documentFrontError = createDocumentResponseFront.getErrorCode();
 
             if (documentFrontError != null) {
-                log.error(documentFrontError.getValue());
+                log.error("Error while scanning document and error is {}", documentFrontError);
                 return setAndReturnErrorResponse("error.while.doc.scan", "Document scan error", response);
             }
 
             DocumentType documentType = createDocumentResponseFront.getDocumentType();
 
             if(documentType == null || "NOT_SUPPORTED".equalsIgnoreCase(documentType.getSupportLevel())) {
+                log.info("document is not support and support level is {}", (documentType == null ? "null" : documentType.getSupportLevel()));
                 throw new BadRequestException("Document is not supported", "Document is not supported", "doc.is.not.supported", request);
             }
 
             String type = (documentType.getType() != null) ?  documentType.getType() : "";
 
+            log.info("document type {}", type);
+            log.info("document edition {}", documentType.getEdition());
+            log.info("country {}", documentType.getCountry());
+
+            MDC.put("documentType", type);
+            MDC.put("edition", documentType.getEdition());
+            MDC.put("country", documentType.getCountry());
+
             AtomicBoolean isPassport =
                     new AtomicBoolean(type.equalsIgnoreCase("passport") ||
                             (StringUtils.isNotEmpty(documentType.getMachineReadableTravelDocument())) && documentType.getMachineReadableTravelDocument().toUpperCase().contains("TD") );
 
+            log.info("isPassport {} ", isPassport);
+
             reqInfo.put("isPassport",isPassport.get() ? "true" : "false");
+
             if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
                 return setAndReturnErrorResponse("invalid.acct.selection", "Invalid document, foreigners must use  passport", response);
             }
@@ -99,7 +112,6 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
             if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(documentType.getCountry())) {
                 return setAndReturnErrorResponse("invalid.acct.selection", "Incorrect document used for onboarding", response);
             }
-
 
             CompletableFuture<GetCustomerResponse> customerResponseCompletableFuture =
                     ApiHelper.execute(callback -> customerOnboardingApi.getCustomerAsync(customerId, callback), request);
@@ -172,7 +184,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     }
 
                     if(!lowOcrConfidenceTextsValidator.validate(validationContext).getResponse()) {
-                        return setAndReturnErrorResponse("low.ocr.confidence.text","Low OCR confidence texts", response);
+                        return setAndReturnErrorResponse("low.ocr.confidence.texts","Low OCR confidence texts", response);
                     }
 
                     if(isPassport.get()) {
@@ -206,8 +218,6 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     throw new ApiExecutionException(e,request);
                 }
             }).join();
-
-
 
             //ImageCrop documentPortrait = customerOnboardingApi.documentPortrait(customerId, null, null);
             ImageCrop frontPage = customerOnboardingApi.documentPageCrop(customerId, "front", null, null);
