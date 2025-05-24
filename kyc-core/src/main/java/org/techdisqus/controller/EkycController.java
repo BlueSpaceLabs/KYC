@@ -43,16 +43,16 @@ public class EkycController {
 
     @PostMapping(value = "/validateAccount", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ValidateAccountResponse> validateAccount(@RequestBody ValidateAccountRequest request) {
-        ValidateAccountResponse response =  validateAccountService.verify(request);
+    public ResponseEntity<ValidateAccountResponse> validateAccount(@RequestBody ValidateAccountRequest request, KycRequestHeaders kycRequestHeaders) {
+        ValidateAccountResponse response =  validateAccountService.verify(request,kycRequestHeaders);
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);
     }
 
     @PostMapping(value = "/validateOtp", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ValidateCodeResponse> validateOtp(@RequestBody ValidateCodeRequest request) {
-        ValidateCodeResponse response =  validateCodeService.verifyOtp(request);
+    public ResponseEntity<ValidateCodeResponse> validateOtp(@RequestBody ValidateCodeRequest request, KycRequestHeaders kycRequestHeaders) {
+        ValidateCodeResponse response =  validateCodeService.verifyOtp(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);
@@ -63,15 +63,15 @@ public class EkycController {
         UserConfigRequest request = new UserConfigRequest();
         request.setLocale(kycRequestHeaders.getLocale());
         request.setRequestInformation(kycRequestHeaders.getRequestInformation());
-        UserConfigResponse response = userConfigService.getAccountTypes(request);
+        UserConfigResponse response = userConfigService.getAccountTypes(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);
     }
 
     @PutMapping(value = "/userConfig")
-    public ResponseEntity<AccountTypeSelectionResponse> submitUserConfig(@RequestBody AccountTypeSelectionRequest request) {
-        AccountTypeSelectionResponse response = userConfigService.submitAccountType(request);
+    public ResponseEntity<AccountTypeSelectionResponse> submitUserConfig(@RequestBody AccountTypeSelectionRequest request, KycRequestHeaders kycRequestHeaders) {
+        AccountTypeSelectionResponse response = userConfigService.submitAccountType(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);
@@ -80,8 +80,8 @@ public class EkycController {
     @SneakyThrows
     @PostMapping(value = "/documentScan", consumes = {MediaType.APPLICATION_JSON_VALUE},
     produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<DocumentScanResponse> documentScan(@RequestBody DocumentScanRequest request) throws ApiException{
-        DocumentScanResponse response = documentScanService.scanDocument(request);
+    public ResponseEntity<DocumentScanResponse> documentScan(@RequestBody DocumentScanRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException{
+        DocumentScanResponse response = documentScanService.scanDocument(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);
@@ -90,15 +90,15 @@ public class EkycController {
     @SneakyThrows
     @PostMapping(value = "/documentScan/raw", consumes = {MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public DocumentScanResponse documentScanBinary(@RequestBody DocumentScanRequest request) throws ApiException {
-        return documentScanService.scanDocument(request);
+    public DocumentScanResponse documentScanBinary(@RequestBody DocumentScanRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException {
+        return documentScanService.scanDocument(request, kycRequestHeaders);
 
     }
 
     @SneakyThrows
     @PostMapping(value = "/evaluateUserSelfie", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserSelfieResponse> evaluateSelfie(@RequestBody UserSelfieRequest request) throws ApiException{
+    public ResponseEntity<UserSelfieResponse> evaluateSelfie(@RequestBody UserSelfieRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException{
         UserSelfieResponse response = selfieScanService.scanSelfie(request);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
@@ -108,8 +108,8 @@ public class EkycController {
     @SneakyThrows
     @PostMapping(value = "/user-details/submit", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserDetailsResponse> submitUserDetailsService(@RequestBody UserDetailsRequest request) throws ApiException{
-        UserDetailsResponse response = userDetailsService.submitPersonalDetails(request);
+    public ResponseEntity<UserDetailsResponse> submitUserDetailsService(@RequestBody UserDetailsRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException{
+        UserDetailsResponse response = userDetailsService.submitPersonalDetails(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);
@@ -118,8 +118,8 @@ public class EkycController {
     @SneakyThrows
     @PostMapping(value = "/additional-docs/upload", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UploadDocumentsResponse> additionalDocsUpload(@RequestBody UploadDocumentsRequest request) throws ApiException{
-        UploadDocumentsResponse response = userAdditionalDocumentService.uploadDocs(request);
+    public ResponseEntity<UploadDocumentsResponse> additionalDocsUpload(@RequestBody UploadDocumentsRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException{
+        UploadDocumentsResponse response = userAdditionalDocumentService.uploadDocs(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);
@@ -128,8 +128,8 @@ public class EkycController {
     @SneakyThrows
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RegisterUserResponse> registerUser(@RequestBody RegisterUserRequest request) throws ApiException{
-        RegisterUserResponse response = registerUserService.register(request);
+    public ResponseEntity<RegisterUserResponse> registerUser(@RequestBody RegisterUserRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException{
+        RegisterUserResponse response = registerUserService.register(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);

@@ -26,6 +26,7 @@ import org.techdisqus.dao.response.SaveToTrustStoreDaoResponse;
 import org.techdisqus.dao.response.custom.attributes.GetCustomerDetailsDaoResponse;
 import org.techdisqus.request.Consent;
 import org.techdisqus.request.Document;
+import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.RegisterUserRequest;
 import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.RegisterUserResponse;
@@ -107,7 +108,7 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
 
     @SneakyThrows
     @Override
-    public RegisterUserResponse register(RegisterUserRequest request) {
+    public RegisterUserResponse register(RegisterUserRequest request, KycRequestHeaders kycRequestHeaders) {
         RegisterUserResponse response =  RegisterUserResponse.builder().build();
         Map<String, String> reqInfo = request.getRequestInformation();
 
