@@ -72,15 +72,9 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
         String customerId = request.getCustomerId();
 
         try {
-
             customerOnboardingApi.deleteCustomer(customerId);
-            
-
-
         } catch (Exception e) {
-        	
 			logger.error("Error while deleting the customer ", e);
-			
         }
     }
 

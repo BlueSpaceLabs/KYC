@@ -1,4 +1,4 @@
-package org.techdisqus.config;
+package org.techdisqus.config.async;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;

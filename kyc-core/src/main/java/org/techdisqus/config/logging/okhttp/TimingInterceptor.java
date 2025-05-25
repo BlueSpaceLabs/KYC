@@ -1,4 +1,4 @@
-package org.techdisqus.config;
+package org.techdisqus.config.logging.okhttp;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -24,6 +24,8 @@ public class TimingInterceptor implements Interceptor {
 
             builder.header("Correlation-ID", MDC.get("Correlation-ID"));
             MDC.put("endpoint", request.url().toString());
+            MDC.put("isSuccess",response.isSuccessful()+"");
+            MDC.put("httpStatusCode",response.code()+"");
             MDC.put("executionTime", timeTaken + "");
             // Log and record downstream time
             logger.info("HTTP {} {} status code {} isSuccess {} took {} ms",  request.method(), request.url(), response.code(), response.isSuccessful(), timeTaken);
@@ -38,6 +40,8 @@ public class TimingInterceptor implements Interceptor {
         }finally {
             MDC.remove("endpoint");
             MDC.remove("executionTime");
+            MDC.remove("isSuccess");
+            MDC.remove("httpStatusCode");
         }
     }
 }

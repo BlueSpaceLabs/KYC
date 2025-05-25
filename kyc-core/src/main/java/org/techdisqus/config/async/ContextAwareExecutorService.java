@@ -1,4 +1,4 @@
-package org.techdisqus.config;
+package org.techdisqus.config.async;
 
 import org.slf4j.MDC;
 

@@ -2,6 +2,7 @@ package org.techdisqus.controller;
 
 import com.innovatrics.dot.integrationsamples.disapi.ApiException;
 import lombok.SneakyThrows;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.techdisqus.request.*;
 import org.techdisqus.response.*;
@@ -9,6 +10,7 @@ import org.techdisqus.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.techdisqus.util.JwtTokenUtil;
 
 @RestController
 @RequestMapping("/v1/ekyc")
@@ -39,13 +41,20 @@ public class EkycController {
     @Autowired
     private RegisterUserService registerUserService;
 
+    @Autowired
+    private UserSummaryService userSummaryService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
 
     @PostMapping(value = "/validateAccount", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ValidateAccountResponse> validateAccount(@RequestBody ValidateAccountRequest request, KycRequestHeaders kycRequestHeaders) {
         ValidateAccountResponse response =  validateAccountService.verify(request,kycRequestHeaders);
-        return response.isSuccess() ? ResponseEntity.ok(response) :
+        String token = jwtTokenUtil.generateToken(request.getAccountIdentifier());
+
+        return response.isSuccess() ? ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(response) :
                 ResponseEntity.badRequest().body(response);
     }
 
@@ -79,7 +88,7 @@ public class EkycController {
 
     @SneakyThrows
     @PostMapping(value = "/documentScan", consumes = {MediaType.APPLICATION_JSON_VALUE},
-    produces = {MediaType.APPLICATION_JSON_VALUE})
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<DocumentScanResponse> documentScan(@RequestBody DocumentScanRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException{
         DocumentScanResponse response = documentScanService.scanDocument(request,kycRequestHeaders);
 
@@ -120,6 +129,18 @@ public class EkycController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UploadDocumentsResponse> additionalDocsUpload(@RequestBody UploadDocumentsRequest request, KycRequestHeaders kycRequestHeaders) throws ApiException{
         UploadDocumentsResponse response = userAdditionalDocumentService.uploadDocs(request,kycRequestHeaders);
+
+        return response.isSuccess() ? ResponseEntity.ok(response) :
+                ResponseEntity.badRequest().body(response);
+    }
+
+    @SneakyThrows
+    @GetMapping(value = "/summary", consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<UserSummaryResponse> additionalDocsUpload( KycRequestHeaders kycRequestHeaders) throws ApiException{
+        UserSummaryRequest request = new UserSummaryRequest();
+        request.setRequestInformation(kycRequestHeaders.getRequestInformation());
+        UserSummaryResponse response = userSummaryService.getSummary(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);

@@ -1,4 +1,4 @@
-package org.techdisqus.config;
+package org.techdisqus.config.logging.okhttp;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
