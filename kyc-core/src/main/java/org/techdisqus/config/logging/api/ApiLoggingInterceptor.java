@@ -1,4 +1,4 @@
-package org.techdisqus.config;
+package org.techdisqus.config.logging.api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

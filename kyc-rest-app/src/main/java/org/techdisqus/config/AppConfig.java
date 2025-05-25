@@ -11,6 +11,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestClient;
+import org.techdisqus.config.async.ContextAwareExecutorService;
+import org.techdisqus.config.logging.okhttp.OkHttpHeaderInjector;
+import org.techdisqus.config.logging.okhttp.TimingInterceptor;
 import org.techdisqus.service.MessageProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-public class Config {
+public class AppConfig {
 
     @Bean(name = "encryptionCredentials")
     public EncryptionCredentials getEncryptionCredentials() {

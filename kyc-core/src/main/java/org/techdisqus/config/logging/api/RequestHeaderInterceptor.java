@@ -1,4 +1,4 @@
-package org.techdisqus.config;
+package org.techdisqus.config.logging.api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +22,6 @@ public class RequestHeaderInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        MDC.clear();
+       // MDC.clear();
     }
 }

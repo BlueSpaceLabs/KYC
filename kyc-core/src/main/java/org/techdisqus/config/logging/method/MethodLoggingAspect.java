@@ -1,4 +1,4 @@
-package org.techdisqus.config;
+package org.techdisqus.config.logging.method;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -46,22 +46,21 @@ public class MethodLoggingAspect {
                 sessionId = getSessionId();
                 MDC.put("sessionId", sessionId);
             }else if(args != null && args.length > 0 && args[0] instanceof AbstractRequest request){
+                if(args.length == 2 && args[1] != null && args[1] instanceof KycRequestHeaders kycRequestHeaders) {
+                    if(request.getRequestInformationString() == null && kycRequestHeaders.getRequestInformation() != null) {
+                        request.setRequestInformation(kycRequestHeaders.getRequestInformation());
+                    }
+                }
+
                 Map<String,String> reqInformation = request.getRequestInformation();
                 String identifier = reqInformation.get("identifier");
                 String hashedId = DigestUtils.md5DigestAsHex(identifier.getBytes());
                 MDC.put("identifier", hashedId);
                 MDC.put("sessionId", reqInformation.get("sessionId"));
-
-                if(args.length == 2 && args[1] != null && args[1] instanceof KycRequestHeaders kycRequestHeaders) {
-                    if(request.getRequestInformation() == null && kycRequestHeaders.getRequestInformation() != null) {
-                        request.setRequestInformation(kycRequestHeaders.getRequestInformation());
-                    }
-                }
             }
 
-
-
             Object result = joinPoint.proceed();
+
             if(result instanceof AbstractResponse response) {
 
                 response.setRequestId(requestId);

@@ -2,10 +2,11 @@ package org.techdisqus.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.techdisqus.config.logging.api.ApiLoggingInterceptor;
+import org.techdisqus.config.logging.api.RequestHeaderInterceptor;
 import org.techdisqus.request.HeaderInfoArgumentResolver;
 
 import java.util.List;
