@@ -48,7 +48,8 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // allow all paths
-                        .allowedOrigins("*") // allow all origins
+                        //.allowedOrigins("*") // allow all origins
+                        .allowedOriginPatterns("*") // allow all origins
                         .exposedHeaders(HttpHeaders.AUTHORIZATION)
                         .allowedMethods("*") // allow all HTTP methods
                         .allowedHeaders("*") // allow all headers
