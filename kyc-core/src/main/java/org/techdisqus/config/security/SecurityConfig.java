@@ -50,10 +50,10 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-       /* config.addAllowedOriginPattern("https://sim.webthoughts.in");
+        config.addAllowedOriginPattern("https://sim.webthoughts.in");
         config.addAllowedOriginPattern("http://localhost:3000");
-        config.addAllowedOriginPattern("https://*.ngrok-free.app");*/
-        config.addAllowedOriginPattern("*");
+        config.addAllowedOriginPattern("https://*.ngrok-free.app");
+        //config.addAllowedOriginPattern("*");
 
         config.addAllowedHeader("*");
         config.addExposedHeader(HttpHeaders.AUTHORIZATION);
