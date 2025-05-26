@@ -11,6 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -24,7 +27,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(AbstractHttpConfigurer::disable) // Disable CSRF for APIs
+        http
+                .cors(cors -> {})
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for APIs
                 .authorizeHttpRequests(authorize -> authorize
                         // Permit all actuator health and info endpoints without authentication
                         .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
@@ -48,12 +53,15 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // allow all paths
-                        //.allowedOrigins("*") // allow all origins
-                        .allowedOriginPatterns("*") // allow all origins
+                        .allowedOriginPatterns(
+                                "https://sim.webthoughts.in",
+                                "http://localhost:3000",
+                                "https://2f78-223-233-81-32.ngrok-free.app"
+                        )
                         .exposedHeaders(HttpHeaders.AUTHORIZATION)
                         .allowedMethods("*") // allow all HTTP methods
                         .allowedHeaders("*") // allow all headers
-                        .allowCredentials(true); // or true if needed
+                        .allowCredentials(false); // or true if needed
             }
         };
     }
