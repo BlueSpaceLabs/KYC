@@ -5,6 +5,7 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointR
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -47,10 +48,11 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // allow all paths
-                        .allowedOrigins("*") // allow all origins
+                        .allowedOrigins("https://sim.webthoughts.in","http://localhost:3000","https://2f78-223-233-81-32.ngrok-free.app") // allow all origins
+                        .exposedHeaders(HttpHeaders.AUTHORIZATION)
                         .allowedMethods("*") // allow all HTTP methods
                         .allowedHeaders("*") // allow all headers
-                        .allowCredentials(false); // or true if needed
+                        .allowCredentials(true); // or true if needed
             }
         };
     }
