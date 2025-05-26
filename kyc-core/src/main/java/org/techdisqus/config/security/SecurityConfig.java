@@ -46,8 +46,25 @@ public class SecurityConfig {
         return http.build();
     }
 
-
     @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+       /* config.addAllowedOriginPattern("https://sim.webthoughts.in");
+        config.addAllowedOriginPattern("http://localhost:3000");
+        config.addAllowedOriginPattern("https://*.ngrok-free.app");*/
+        config.addAllowedOriginPattern("*");
+
+        config.addAllowedHeader("*");
+        config.addExposedHeader(HttpHeaders.AUTHORIZATION);
+        config.addAllowedMethod("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+   /* @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
@@ -61,9 +78,9 @@ public class SecurityConfig {
                         .exposedHeaders(HttpHeaders.AUTHORIZATION)
                         .allowedMethods("*") // allow all HTTP methods
                         .allowedHeaders("*") // allow all headers
-                        .allowCredentials(false); // or true if needed
+                        .allowCredentials(true); // or true if needed
             }
         };
-    }
+    }*/
 
 }

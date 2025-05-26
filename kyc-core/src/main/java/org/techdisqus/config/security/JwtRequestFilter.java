@@ -32,7 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String requestInformation = request.getHeader("x-requestInformation");
 
-        if (false && header != null && header.startsWith("Bearer ")) {
+        if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
                 String username = jwtTokenUtil.validateTokenAndGetSubject(token, requestInformation);
@@ -48,12 +48,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return;
             }
-        }else {
+        }/*else {
             var authorities = List.of(new SimpleGrantedAuthority("ROLE_USER")); // or ROLE_ADMIN based on your logic
             var authToken = new UsernamePasswordAuthenticationToken("username", null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
-        }
+        }*/
 
         filterChain.doFilter(request, response);
     }
