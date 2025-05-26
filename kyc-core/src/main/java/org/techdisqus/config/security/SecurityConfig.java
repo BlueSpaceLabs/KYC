@@ -48,7 +48,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // allow all paths
-                        .allowedOrigins("https://sim.webthoughts.in","http://localhost:3000","https://2f78-223-233-81-32.ngrok-free.app") // allow all origins
+                        .allowedOrigins("*") // allow all origins
                         .exposedHeaders(HttpHeaders.AUTHORIZATION)
                         .allowedMethods("*") // allow all HTTP methods
                         .allowedHeaders("*") // allow all headers
