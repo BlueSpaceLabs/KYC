@@ -184,9 +184,9 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                         return setAndReturnErrorResponse("invalid.doc.expired", "Document is expired", response);
                     }
 
-                    if(!lowOcrConfidenceTextsValidator.validate(validationContext).getResponse()) {
+                  /*  if(!lowOcrConfidenceTextsValidator.validate(validationContext).getResponse()) {
                         return setAndReturnErrorResponse("low.ocr.confidence.texts","Low OCR confidence texts", response);
-                    }
+                    }*/
 
                     if(isPassport.get()) {
                         if(!mrzValidator.validate(validationContext).getResponse()) {
