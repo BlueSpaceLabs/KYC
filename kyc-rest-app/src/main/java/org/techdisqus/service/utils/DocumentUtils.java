@@ -69,7 +69,7 @@ public class DocumentUtils {
         Customer customer = contextHolder.customer();
 
         if (source.equals(mrz)) {
-            return extractData(customer.getFullName(), mrz);
+            return extractData(customer.getDateOfBirth(), mrz);
         }
         return extractData(customer.getDateOfBirth(), visualZone);
     }
