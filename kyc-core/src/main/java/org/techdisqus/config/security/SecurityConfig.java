@@ -57,6 +57,7 @@ public class SecurityConfig {
 
         config.addAllowedHeader("*");
         config.addExposedHeader(HttpHeaders.AUTHORIZATION);
+        config.addExposedHeader("x-requestInformation");
         config.addAllowedMethod("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

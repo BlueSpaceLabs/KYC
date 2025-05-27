@@ -106,13 +106,13 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
 
             reqInfo.put("isPassport",isPassport.get() ? "true" : "false");
 
-            if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
+          /*  if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
                 return setAndReturnErrorResponse("invalid.acct.selection", "Invalid document, foreigners must use  passport", response);
             }
 
             if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(documentType.getCountry())) {
                 return setAndReturnErrorResponse("invalid.acct.selection", "Incorrect document used for onboarding", response);
-            }
+            }*/
 
             CompletableFuture<GetCustomerResponse> customerResponseCompletableFuture =
                     ApiHelper.execute(callback -> customerOnboardingApi.getCustomerAsync(customerId, callback), request);
@@ -159,9 +159,9 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                         nationality = documentType.getCountry();
                     }
 
-                    if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(nationality)) {
+                 /*   if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(nationality)) {
                         return setAndReturnErrorResponse("invalid.acct.selection", "Incorrect document used for onboarding", response);
-                    }
+                    }*/
 
                     assert getCustomerResponse.getCustomer() != null;
                     CustomerDocument customerDocument = getCustomerResponse.getCustomer().getDocument();
