@@ -141,9 +141,9 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     }
                     Result<Boolean> result = customerDateOfBirthValidator.validate(new ValidationContext<>(getCustomerResponse, source, isPassport.get(), request));
 
-                    if(!result.getResponse()) {
+                   /* if(!result.getResponse()) {
                         return setAndReturnErrorResponse("invalid.dob", "Invalid date of birth", response);
-                    }
+                    }*/
 
                     DocumentUtils.ContextHolder contextHolder = new DocumentUtils.ContextHolder(getCustomerResponse.getCustomer());
 
