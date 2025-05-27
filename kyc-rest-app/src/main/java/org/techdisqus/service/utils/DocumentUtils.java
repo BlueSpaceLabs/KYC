@@ -96,7 +96,8 @@ public class DocumentUtils {
     public static String getMiddleNameViz(ContextHolder contextHolder, String source) {
         Customer customer  = contextHolder.customer();
 
-        if(customer.getDocument() != null && customer.getDocument().getAdditionalTexts() != null) {
+        if(customer.getDocument() != null && customer.getDocument().getAdditionalTexts() != null &&
+                customer.getDocument().getAdditionalTexts().get("middleName") != null) {
             return customer.getDocument().getAdditionalTexts().get("middleName").getVisualZone();
         }
 
