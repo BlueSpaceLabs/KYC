@@ -37,7 +37,15 @@ public class UserSummaryServiceImpl extends KycBaseService implements UserSummar
             isPassport = true;
         }
 
-        GetCustomerResponse getCustomerResponse = customerOnboardingApi.getCustomer(map.get("customerId"));
+        GetCustomerResponse getCustomerResponse = null;
+        try{
+            getCustomerResponse = customerOnboardingApi.getCustomer(map.get("customerId"));
+        }catch (ApiException e) {
+            log.error("Error while getting the customer ", e);
+            userSummaryResponse.setErrorDetails(e.getCode()+"");
+            userSummaryResponse.setErrorCode("SUMMARY-001");
+            return userSummaryResponse;
+        }
         DocumentUtils.ContextHolder contextHolder = new DocumentUtils.ContextHolder(getCustomerResponse.getCustomer());
         try {
             ImageCrop frontPage = customerOnboardingApi.documentPageCrop(request.getCustomerId(), "front", null, null);
