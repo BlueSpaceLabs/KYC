@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         log.error("Error while executing request ", ex);
-        return buildResponse(ex, HttpStatus.BAD_REQUEST);
+        return buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ApiExecutionException.class)
@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
 
         AbstractResponse response = AbstractResponse.builder()
                 .errorDetails(exception.getMessage())
-                .errorCode(exception.getMessage())
+                .errorCode("Error while processing the request")
                 .build();
 
         return new ResponseEntity<>(response, status);

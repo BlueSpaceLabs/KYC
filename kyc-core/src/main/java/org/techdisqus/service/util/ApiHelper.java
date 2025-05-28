@@ -2,6 +2,7 @@ package org.techdisqus.service.util;
 
 import com.innovatrics.dot.integrationsamples.disapi.ApiCallback;
 import com.innovatrics.dot.integrationsamples.disapi.ApiException;
+import lombok.extern.slf4j.Slf4j;
 import org.techdisqus.exception.ApiExecutionException;
 import org.techdisqus.request.AbstractRequest;
 
@@ -9,9 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+@Slf4j
 public class ApiHelper {
 
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool((int) (Runtime.getRuntime().availableProcessors() / 0.3));
 
     public static <T> void executeAsyncWithHandler(
             ApiInvoker<T> apiInvoker,
@@ -63,7 +65,7 @@ public class ApiHelper {
     public interface ResponseHandler<T> {
         void onSuccess(T response);
         default void onFailure(Throwable t) {
-            t.printStackTrace();
+            log.error("Error while execution", t);
         }
     }
 
