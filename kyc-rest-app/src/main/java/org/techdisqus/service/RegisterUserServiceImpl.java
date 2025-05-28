@@ -225,7 +225,9 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
 
             if (saveToTrustStoreDaoResponse == null) {
 
-                GetCustomerDetailsDaoResponse currentCustomerDetailsDaoResponse = getCustomerDetailsDao.queryByExternalId(externalId, true);
+                logger.info("The data is stored in tp successfully {} and customer ID {}", externalId, customerId);
+
+                /*GetCustomerDetailsDaoResponse currentCustomerDetailsDaoResponse = getCustomerDetailsDao.queryByExternalId(externalId, true);
 
                 String status = currentCustomerDetailsDaoResponse.getGallery();
                 StatusHolder statusHolder = null;
@@ -301,7 +303,7 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
                     }
 
                     response.setStatus(status);
-                }
+                }*/
 
             } else {
                 logger.error("externalId {} msisdn {} and customer Id {} saving to trust store failed with error code {} and message {}",
