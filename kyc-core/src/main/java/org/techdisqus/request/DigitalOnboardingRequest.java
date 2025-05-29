@@ -2,6 +2,7 @@ package org.techdisqus.request;
 
 import lombok.Data;
 import org.techdisqus.response.ExtractedData;
+import org.techdisqus.response.UserOnboardingDetails;
 
 import java.util.List;
 
@@ -15,5 +16,6 @@ public abstract class DigitalOnboardingRequest extends AbstractRequest {
     private List<ExtractedData> extractedDataList;
     private List<ExtractedData> updatedValues;
     private List<Address> addresses;
+    private UserOnboardingDetails userOnboardingDetails;
 
 }
