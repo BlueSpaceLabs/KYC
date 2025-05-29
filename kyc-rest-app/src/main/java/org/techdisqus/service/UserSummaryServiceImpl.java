@@ -38,8 +38,9 @@ public class UserSummaryServiceImpl extends KycBaseService implements UserSummar
         }
 
         GetCustomerResponse getCustomerResponse = null;
+        String customerId  = map.get("customerId");
         try{
-            getCustomerResponse = customerOnboardingApi.getCustomer(map.get("customerId"));
+            getCustomerResponse = customerOnboardingApi.getCustomer(customerId);
         }catch (ApiException e) {
             log.error("Error while getting the customer ", e);
             userSummaryResponse.setErrorDetails(e.getCode()+"");
@@ -48,7 +49,7 @@ public class UserSummaryServiceImpl extends KycBaseService implements UserSummar
         }
         DocumentUtils.ContextHolder contextHolder = new DocumentUtils.ContextHolder(getCustomerResponse.getCustomer());
         try {
-            ImageCrop frontPage = customerOnboardingApi.documentPageCrop(request.getCustomerId(), "front", null, null);
+            ImageCrop frontPage = customerOnboardingApi.documentPageCrop(customerId, "front", null, null);
 
             List<ExtractedData> extractedDataList = List.of(new ExtractedData("dob", DocumentUtils.getDateOfBirthStr(contextHolder, source), "Date of birth"),
                     new ExtractedData("gender",DocumentUtils.getGender(contextHolder, source), "Gender"),
