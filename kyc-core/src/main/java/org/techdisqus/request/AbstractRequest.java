@@ -13,6 +13,8 @@ import java.util.Map;
 @Data
 public abstract class AbstractRequest {
 
+    private String accountIdentifier;
+
     private String requestInformation;
 
     private String requestId;

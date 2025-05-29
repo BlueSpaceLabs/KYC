@@ -21,6 +21,7 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class AbstractResponse {
 
+    private String accountIdentifier;
     private String errorCode;
     private String errorDetails;
     private String userData;

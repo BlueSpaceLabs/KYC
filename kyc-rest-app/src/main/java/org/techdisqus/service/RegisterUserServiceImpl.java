@@ -117,6 +117,7 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
         List<Consent> consents = request.getConsents();
         String msisdn = reqInfo.get("msisdn");
         String encryptedMsisdn = encryptionUtil.encrypt(msisdn);
+        response.setAccountIdentifier(msisdn);
 
        /* if (CollectionUtils.isEmpty(consents)) {
             logger.error("Consent not given for msisdn {}  ", encryptedMsisdn);
