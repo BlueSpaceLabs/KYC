@@ -37,6 +37,10 @@ public class AbstractResponse {
         }
     }
 
+    public void setUserData(String userData) {
+        this.userData = userData;
+    }
+
     @JsonIgnore
     public boolean isSuccess(){
         if(errorCode != null) {

@@ -1,8 +1,15 @@
 package org.techdisqus.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.techdisqus.request.Address;
 import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.UserDetailsRequest;
 import org.techdisqus.response.ExtractedData;
@@ -55,6 +62,19 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
             userDetailsResponse.setErrorCode("PERSONAL-001");
         }
         reqInfo.put("externalId", DistributedULIDGenerator.generateULID());
+        try {
+            UserDetailsHolder userDetailsHolder = UserDetailsHolder.builder()
+                    .addresses(request.getAddresses())
+                    .gender(request.getGender())
+                    .lastName(request.getLastName())
+                    .firstName(request.getFirstName())
+                    .dateOfBirth(request.getDateOfBirth())
+                    .middleName(request.getMiddleName())
+                    .build();
+            reqInfo.put("userDetails", new ObjectMapper().writeValueAsString(userDetailsHolder));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         userDetailsResponse.setUserData(reqInfo);
 
         log.info("user details submit ended");
@@ -147,6 +167,19 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
                 .stream()
                 .filter(derivedValue -> derivedValue.getValue() != null)
                 .collect(Collectors.toMap(ExtractedData::getKey, ExtractedData::getValue));
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserDetailsHolder {
+        private String firstName;
+        private String middleName;
+        private String lastName;
+        private String gender;
+        private String dateOfBirth;
+        private List<Address> addresses;
     }
 
 
