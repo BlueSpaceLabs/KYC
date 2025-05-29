@@ -321,7 +321,7 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
             response.setErrorCode("REGISTER-015");
 
         } finally {
-            deleteCustomer(request);
+           // deleteCustomer(request);
         }
         return null;
     }
