@@ -30,7 +30,7 @@ public class UserSummaryServiceImpl extends KycBaseService implements UserSummar
         log.info("getting summary");
         Map<String, String> map = request.getRequestInformation();
         String userDetails = map.get("userDetails");
-        UserDetailsServiceImpl.UserDetailsHolder userDetailsHolder = new ObjectMapper().convertValue(userDetails, UserDetailsServiceImpl.UserDetailsHolder.class);
+        UserDetailsServiceImpl.UserDetailsHolder userDetailsHolder = new ObjectMapper().readValue(userDetails, UserDetailsServiceImpl.UserDetailsHolder.class);
 
         UserSummaryResponse userSummaryResponse = UserSummaryResponse.builder().build();
         UserOnboardingDetails userOnboardingDetails = UserOnboardingDetails.builder().
