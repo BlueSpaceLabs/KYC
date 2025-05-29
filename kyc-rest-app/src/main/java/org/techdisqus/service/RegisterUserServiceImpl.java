@@ -323,6 +323,9 @@ public class RegisterUserServiceImpl extends KycBaseService implements RegisterU
         } finally {
            // deleteCustomer(request);
         }
-        return null;
+        response.setReferenceId(externalId);
+        response.setStatusMessage("Registration is successful");
+
+        return response;
     }
 }
