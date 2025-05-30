@@ -27,7 +27,7 @@ public class ValidateAccountServiceImpl extends KycBaseService implements Valida
         log.info("account validation started");
         ValidateAccountResponse response = ValidateAccountResponse.builder().build();
         response.setAccountIdentifier(request.getAccountIdentifier());
-        String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 6);
+        String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 4);
         Map<String, String> reqInfo = new HashMap<>();
         reqInfo.put("msisdn", request.getAccountIdentifier());
         reqInfo.put("otp", otp);
@@ -43,7 +43,7 @@ public class ValidateAccountServiceImpl extends KycBaseService implements Valida
         log.info("resend otp started");
         ResendOtpResponse response = ResendOtpResponse.builder().build();
         response.setAccountIdentifier(request.getAccountIdentifier());
-        String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 6);
+        String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 4);
         Map<String, String> reqInfo = new HashMap<>();
         reqInfo.put("msisdn", request.getAccountIdentifier());
         reqInfo.put("otp", otp);
