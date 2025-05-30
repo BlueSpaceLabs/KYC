@@ -63,8 +63,8 @@ public class EkycController {
 
     @PostMapping(value = "/resend-otp", consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ValidateAccountResponse> resendOtp(@RequestBody ValidateAccountRequest request, KycRequestHeaders kycRequestHeaders) {
-        ValidateAccountResponse response =  validateAccountService.resendOtp(request,kycRequestHeaders);
+    public ResponseEntity<ResendOtpResponse> resendOtp(@RequestBody ResendOtpRequest request, KycRequestHeaders kycRequestHeaders) {
+        ResendOtpResponse response =  validateAccountService.resendOtp(request,kycRequestHeaders);
         String token = jwtTokenUtil.generateToken(request.getAccountIdentifier());
 
         return response.isSuccess() ? ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(response) :
@@ -148,7 +148,7 @@ public class EkycController {
     }
 
     @SneakyThrows
-    @GetMapping(value = "/summary",
+    @GetMapping(value = {"/summary", "/applicant-details"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserSummaryResponse> additionalDocsUpload( KycRequestHeaders kycRequestHeaders) throws ApiException{
         UserSummaryRequest request = new UserSummaryRequest();

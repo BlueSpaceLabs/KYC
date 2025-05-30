@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.techdisqus.OtpUtil;
 import org.techdisqus.request.KycRequestHeaders;
+import org.techdisqus.request.ResendOtpRequest;
 import org.techdisqus.request.ValidateAccountRequest;
+import org.techdisqus.response.ResendOtpResponse;
 import org.techdisqus.response.ValidateAccountResponse;
 import org.springframework.stereotype.Component;
 
@@ -37,9 +39,9 @@ public class ValidateAccountServiceImpl extends KycBaseService implements Valida
     }
 
     @Override
-    public ValidateAccountResponse resendOtp(ValidateAccountRequest request, KycRequestHeaders kycRequestHeaders) {
+    public ResendOtpResponse resendOtp(ResendOtpRequest request, KycRequestHeaders kycRequestHeaders) {
         log.info("resend otp started");
-        ValidateAccountResponse response = ValidateAccountResponse.builder().build();
+        ResendOtpResponse response = ResendOtpResponse.builder().build();
         response.setAccountIdentifier(request.getAccountIdentifier());
         String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 6);
         Map<String, String> reqInfo = new HashMap<>();
