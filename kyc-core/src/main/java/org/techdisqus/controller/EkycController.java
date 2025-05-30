@@ -45,6 +45,9 @@ public class EkycController {
     private UserSummaryService userSummaryService;
 
     @Autowired
+    private EditService editService;
+
+    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
 
@@ -52,6 +55,16 @@ public class EkycController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ValidateAccountResponse> validateAccount(@RequestBody ValidateAccountRequest request, KycRequestHeaders kycRequestHeaders) {
         ValidateAccountResponse response =  validateAccountService.verify(request,kycRequestHeaders);
+        String token = jwtTokenUtil.generateToken(request.getAccountIdentifier());
+
+        return response.isSuccess() ? ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(response) :
+                ResponseEntity.badRequest().body(response);
+    }
+
+    @PostMapping(value = "/resend-otp", consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ValidateAccountResponse> resendOtp(@RequestBody ValidateAccountRequest request, KycRequestHeaders kycRequestHeaders) {
+        ValidateAccountResponse response =  validateAccountService.resendOtp(request,kycRequestHeaders);
         String token = jwtTokenUtil.generateToken(request.getAccountIdentifier());
 
         return response.isSuccess() ? ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(response) :
@@ -135,12 +148,24 @@ public class EkycController {
     }
 
     @SneakyThrows
-    @GetMapping(value = "/summary", consumes = {MediaType.APPLICATION_JSON_VALUE},
+    @GetMapping(value = "/summary",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserSummaryResponse> additionalDocsUpload( KycRequestHeaders kycRequestHeaders) throws ApiException{
         UserSummaryRequest request = new UserSummaryRequest();
         request.setRequestInformation(kycRequestHeaders.getRequestInformation());
         UserSummaryResponse response = userSummaryService.getSummary(request,kycRequestHeaders);
+
+        return response.isSuccess() ? ResponseEntity.ok(response) :
+                ResponseEntity.badRequest().body(response);
+    }
+
+    @SneakyThrows
+    @GetMapping(value = "/edit", consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<EditResponse> edit( KycRequestHeaders kycRequestHeaders) throws ApiException{
+        EditRequest request = new EditRequest();
+        request.setRequestInformation(kycRequestHeaders.getRequestInformation());
+        EditResponse response = editService.edit(request,kycRequestHeaders);
 
         return response.isSuccess() ? ResponseEntity.ok(response) :
                 ResponseEntity.badRequest().body(response);

@@ -7,8 +7,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -24,18 +26,22 @@ public class JwtTokenUtil {
     @Autowired
     private EncryptionUtil encryptionUtil;
 
-    private static final long EXPIRATION_TIME = 86400000; // 1 day in ms
-    private static final String SECRET = "y9V@8!ze#4T$gYf2kLd^0eMvR%qXN&Ap\n"; // at least 32 characters
-    private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
+    @Value("${jwt.expirationMs}")
+    private  long expirationTime;
+
+    @Value("${jwt.secret}")
+    private  String secret; // at least 32 characters
+
+    private  SecretKey KEY;
 
     public String generateToken(String subject) {
-        SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuer("kyc-resp-app")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + Duration.ofHours(1).toMillis())) // 1 hour
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // 1 hour
                 .signWith(key, SignatureAlgorithm.HS256) // pass SecretKey directly
                 .compact();
     }
@@ -78,7 +84,10 @@ public class JwtTokenUtil {
 
         return claims.getSubject();
 
+    }
 
-
+    @PostConstruct
+    public void init() {
+        KEY = Keys.hmacShaKeyFor(secret.getBytes());
     }
 }

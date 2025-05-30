@@ -154,13 +154,6 @@ public abstract class KycBaseService implements RetryHandler{
         return new Result<>(null, false);
     }
 
-    protected String getRequestId() {
-        return UUID.randomUUID().toString();
-    }
-
-    protected String getSessionId() {
-        return UUID.randomUUID().toString();
-    }
 
     public Locale toLocale(AbstractRequest request) {
         return Locale.forLanguageTag(request.getLocale());
@@ -178,5 +171,13 @@ public abstract class KycBaseService implements RetryHandler{
         opaqueData.put(whichCount, String.valueOf(count + 1));
         opaqueData.put("sentDateTime", String.valueOf(Instant.now().toEpochMilli()));
         response.setUserData(opaqueData);
+    }
+
+    public short getAllowedRetryCount() {
+        return 3;
+    }
+
+    protected RetryHandler getRetryHandler() {
+        return this;
     }
 }

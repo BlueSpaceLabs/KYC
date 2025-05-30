@@ -1,25 +1,24 @@
 package org.techdisqus.service;
 
 
-import com.innovatrics.dot.integrationsamples.disapi.ApiException;
 import com.innovatrics.dot.integrationsamples.disapi.model.CustomerOnboardingApi;
-import com.innovatrics.dot.integrationsamples.disapi.model.GetCustomerResponse;
-import com.innovatrics.dot.integrationsamples.disapi.model.ImageCrop;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.techdisqus.exception.ApiExecutionException;
+import org.techdisqus.request.Document;
 import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.UploadDocumentsRequest;
-import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.UploadDocumentsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-import org.techdisqus.service.utils.DocumentUtils;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -39,10 +38,27 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
 		log.info("upload additional docs started");
 		UploadDocumentsResponse uploadDocumentsResponse = UploadDocumentsResponse.builder().build();
 		Map<String,String> map = request.getRequestInformation();
-		String source = DocumentUtils.visualZone;
+
+
+		request.getDocuments().forEach(doc -> {
+            try {
+                Files.write(Paths.get("/tmp/" + map.get("msisdn") +"___"+ doc.getName() + "___" + doc.getType() + ".txt"),
+                        doc.getImage().getBytes(), StandardOpenOption.WRITE);
+            } catch (IOException e) {
+                throw new ApiExecutionException(e, request);
+            }
+        });
+		request.getDocuments().forEach(document -> document.setUploadedSuccessfully(true));
+
+		String fileNames = uploadDocumentsResponse.getDocuments().stream().map(Document::getName).collect(Collectors.joining(","));
+		String fileTypes = uploadDocumentsResponse.getDocuments().stream().map(Document::getType).collect(Collectors.joining(","));
+		map.put("fileNames", fileNames);
+		map.put("fileTypes", fileTypes);
 		uploadDocumentsResponse.setUserData(map);
 
-		boolean isPassport = false;
+		uploadDocumentsResponse.setDocuments(request.getDocuments().stream().peek(document -> document.setUploadedSuccessfully(true)).toList());
+
+		/*boolean isPassport = false;
 		if(map.getOrDefault("isPassport", "false").equalsIgnoreCase("true")){
 			source = DocumentUtils.mrz;
 			isPassport = true;
@@ -70,7 +86,7 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
         } catch (ApiException e) {
             throw new RuntimeException(e);
         }
-
+*/
 		log.info("upload additional docs ended");
 
 		return uploadDocumentsResponse;

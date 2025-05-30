@@ -26,6 +26,7 @@ public class AbstractResponse {
     private String errorDetails;
     private String userData;
     private String requestId;
+    private String message;
 
     public void setUserData(Map<String, String> map) {
         ApplicationContext context = ApplicationContextUtils.getApplicationContext();

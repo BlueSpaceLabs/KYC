@@ -4,29 +4,28 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.techdisqus.request.EditRequest;
 import org.techdisqus.request.KycRequestHeaders;
-import org.techdisqus.request.UserSummaryRequest;
-import org.techdisqus.response.UserSummaryResponse;
+import org.techdisqus.response.EditResponse;
 import org.techdisqus.service.utils.UserDetailsUtil;
 
 import java.util.*;
 
 @Component
 @Slf4j
-public class UserSummaryServiceImpl extends KycBaseService implements UserSummaryService {
+public class EditServiceImpl extends KycBaseService implements EditService {
 
     @Autowired
     private UserDetailsUtil userDetailsUtil;
 
     @SneakyThrows
     @Override
-    public UserSummaryResponse getSummary(UserSummaryRequest request, KycRequestHeaders kycRequestHeaders) {
-
-        log.info("getting summary");
+    public EditResponse edit(EditRequest request, KycRequestHeaders kycRequestHeaders) {
+        log.info("getting edit");
 
         Map<String, String> map = request.getRequestInformation();
 
-        UserSummaryResponse userSummaryResponse = UserSummaryResponse
+        EditResponse editResponse = EditResponse
                 .builder()
                 .documents(userDetailsUtil.getAdditionalDocuments(map))
                 .accountIdentifier(map.get("msisdn"))
@@ -37,6 +36,6 @@ public class UserSummaryServiceImpl extends KycBaseService implements UserSummar
 
         log.info("getting summary completed");
 
-        return userSummaryResponse;
+        return editResponse;
     }
 }
