@@ -3,6 +3,7 @@ package org.techdisqus.exception;
 import com.innovatrics.dot.integrationsamples.disapi.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,7 +15,6 @@ import org.techdisqus.response.AbstractResponse;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<?> handleBadRequest(BadRequestException ex) {
@@ -47,6 +47,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(MaxAttemptsExceededException.class)
+    public ResponseEntity<?> handleMaxRetries(MaxAttemptsExceededException ex) {
+        log.error("Exception: Error while executing request ", ex);
+        return buildResponse(ex, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericException(Exception ex) {
         log.error("Exception: Error while executing request ", ex);
@@ -61,7 +67,9 @@ public class GlobalExceptionHandler {
                 .errorDetails(exception.getErrorMessage())
                 .errorCode(exception.getErrorCode())
                 .requestId(exception.getRequest().getRequestId()).build();
-        response.setUserData(exception.getRequest().getRequestInformation());
+        if(exception.getRequest().getRequestInformationString() != null && !exception.getRequest().getRequestInformation().isEmpty()) {
+            response.setUserData(exception.getRequest().getRequestInformation());
+        }
 
 
         return new ResponseEntity<>(response, status);

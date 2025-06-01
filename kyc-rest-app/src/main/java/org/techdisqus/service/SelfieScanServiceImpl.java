@@ -93,6 +93,8 @@ public class SelfieScanServiceImpl extends KycBaseService
 				return response;
 			}else {
 
+				log.info("liveness score is {} ", evaluateCustomerLivenessResponse.getScore());
+
 				CompletableFuture<CustomerInspectResponse> customerInspectCompletableFuture =
 						ApiHelper.execute(callback -> customerOnboardingApi.inspectAsync(customerId, callback), request);
 
@@ -105,7 +107,10 @@ public class SelfieScanServiceImpl extends KycBaseService
 						CustomerInspectResponse customerInspectResponse = customerInspectCompletableFuture.get();
 						GetCustomerResponse getCustomerResponse = getCustomerResponseCompletableFuture.get();
 
-						response.setSelfieData(List.of(new ExtractedData("selfie.age",getCustomerResponse.getCustomer().getAge().getSelfie(), "Selfie Age"),
+                        assert getCustomerResponse.getCustomer() != null;
+                        assert getCustomerResponse.getCustomer().getAge() != null;
+                        assert getCustomerResponse.getCustomer().getGender() != null;
+                        response.setSelfieData(List.of(new ExtractedData("selfie.age",getCustomerResponse.getCustomer().getAge().getSelfie(), "Selfie Age"),
 								new ExtractedData("selfie.gender",getCustomerResponse.getCustomer().getGender().getSelfie(), "Selfie Gender")));
 
 
@@ -125,7 +130,8 @@ public class SelfieScanServiceImpl extends KycBaseService
 								return response;
 							}
 
-							if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getSimilarityWith().getDocumentPortrait())) {
+                            assert customerInspectResponse.getSelfieInspection().getSimilarityWith() != null;
+                            if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getSimilarityWith().getDocumentPortrait())) {
 								response.setErrorCode("SELFIE-004");
 								response.setErrorDetails("Portrait and selfie does not match");
 								return response;
@@ -137,7 +143,8 @@ public class SelfieScanServiceImpl extends KycBaseService
 								return response;
 							}
 
-							if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getGenderConsistency().getDocumentPortrait())) {
+                            assert customerInspectResponse.getSelfieInspection().getGenderConsistency() != null;
+                            if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getGenderConsistency().getDocumentPortrait())) {
 								response.setErrorCode("SELFIE-006");
 								response.setErrorDetails("Gender does not match");
 								return response;
@@ -160,7 +167,8 @@ public class SelfieScanServiceImpl extends KycBaseService
 				}).join();
 
 				CreateSelfieRequest createSelfieRequest = new CreateSelfieRequest();
-				LivenessSelfieOrigin livenessSelfieOrigin = new LivenessSelfieOrigin().link(createCustomerLivenessRecordResponse.getLinks().getSelfie());
+                assert createCustomerLivenessRecordResponse.getLinks() != null;
+                LivenessSelfieOrigin livenessSelfieOrigin = new LivenessSelfieOrigin().link(createCustomerLivenessRecordResponse.getLinks().getSelfie());
 				createSelfieRequest.setSelfieOrigin(livenessSelfieOrigin);
 
 				CreateSelfieResponse createSelfieResponse = customerOnboardingApi.createSelfie1(customerId, createSelfieRequest);
@@ -175,7 +183,8 @@ public class SelfieScanServiceImpl extends KycBaseService
 				CreateCustomerLivenessSelfieRequest createCustomerLivenessSelfieRequest = new CreateCustomerLivenessSelfieRequest();
 
 				SelfieOrigin selfieOrigin = new SelfieOrigin();
-				selfieOrigin.setLink(createSelfieResponse.getLinks().getSelf());
+                assert createSelfieResponse.getLinks() != null;
+                selfieOrigin.setLink(createSelfieResponse.getLinks().getSelf());
 				createCustomerLivenessSelfieRequest.setSelfieOrigin(selfieOrigin);
 				createCustomerLivenessSelfieRequest.setAssertion(CreateCustomerLivenessSelfieRequest.AssertionEnum.NONE);
 

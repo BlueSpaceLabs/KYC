@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
@@ -175,6 +176,10 @@ public abstract class KycBaseService implements RetryHandler{
 
     public short getAllowedRetryCount() {
         return 3;
+    }
+
+    public long getDurationInMilli() {
+        return Duration.ofMinutes(2).toMillis();
     }
 
     protected RetryHandler getRetryHandler() {

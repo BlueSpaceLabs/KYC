@@ -38,7 +38,12 @@ public abstract class AbstractRequest {
     public void setRequestInformation(Map<String, String> map) {
         ApplicationContext context = ApplicationContextUtils.getApplicationContext();
         EncryptionUtil encryptionUtil = context.getBean(EncryptionUtil.class);
-        requestInformation = encryptionUtil.decrypt(map.toString());
+        try {
+            String json = new ObjectMapper().writeValueAsString(map);
+            this.requestInformation =  encryptionUtil.encrypt(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setRequestInformation(String requestInformation) {

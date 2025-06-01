@@ -26,6 +26,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
+    // Spring Data Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation 'com.hazelcast:hazelcast-spring:5.3.6'
+
     // SLF4J API for logging
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
@@ -45,6 +50,10 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
     implementation 'org.apache.commons:commons-collections4:4.4'
+
+
+    // Jedis or Lettuce client (Lettuce is default with Spring Boot 2+)
+    implementation 'io.lettuce:lettuce-core' // Lettuce Redis client
 
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
