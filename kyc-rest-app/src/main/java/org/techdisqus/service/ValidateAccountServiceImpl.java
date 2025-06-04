@@ -44,7 +44,7 @@ public class ValidateAccountServiceImpl extends KycBaseService implements Valida
         ResendOtpResponse response = ResendOtpResponse.builder().build();
         response.setAccountIdentifier(request.getAccountIdentifier());
         String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 4);
-        Map<String, String> reqInfo = new HashMap<>();
+        Map<String, String> reqInfo = request.getRequestInformation();
         reqInfo.put("msisdn", request.getAccountIdentifier());
         reqInfo.put("otp", otp);
         response.setUserData(reqInfo);

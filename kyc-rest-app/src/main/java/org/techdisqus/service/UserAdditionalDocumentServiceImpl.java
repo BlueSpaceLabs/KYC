@@ -15,9 +15,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,24 +37,27 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
 
 
 		log.info("upload additional docs started");
-		UploadDocumentsResponse uploadDocumentsResponse = UploadDocumentsResponse.builder().build();
+		UploadDocumentsResponse uploadDocumentsResponse = UploadDocumentsResponse.builder().documents(request.getDocuments()).build();
 		Map<String,String> map = request.getRequestInformation();
 
+		StringBuilder sb = new StringBuilder();
 
 		request.getDocuments().forEach(doc -> {
             try {
-                Files.write(Paths.get("/tmp/" + map.get("msisdn") +"___"+ doc.getName() + "___" + doc.getType() + ".txt"),
-                        doc.getImage().getBytes(), StandardOpenOption.WRITE);
+
+				Path tempFile = Files.createTempFile( map.get("msisdn") +"___"+ doc.getName() + "___" + doc.getType() + UUID.randomUUID(), ".txt");
+                Files.write(tempFile, doc.getImage().getBytes(), StandardOpenOption.WRITE);
+				sb.append(tempFile.toAbsolutePath()).append(",");
             } catch (IOException e) {
                 throw new ApiExecutionException(e, request);
             }
         });
-		request.getDocuments().forEach(document -> document.setUploadedSuccessfully(true));
 
-		String fileNames = uploadDocumentsResponse.getDocuments().stream().map(Document::getName).collect(Collectors.joining(","));
-		String fileTypes = uploadDocumentsResponse.getDocuments().stream().map(Document::getType).collect(Collectors.joining(","));
+		String fileNames = request.getDocuments().stream().map(Document::getName).collect(Collectors.joining(","));
+		String fileTypes = request.getDocuments().stream().map(Document::getType).collect(Collectors.joining(","));
 		map.put("fileNames", fileNames);
 		map.put("fileTypes", fileTypes);
+		map.put("files",sb.substring(0,sb.lastIndexOf(",")));
 		uploadDocumentsResponse.setUserData(map);
 
 		uploadDocumentsResponse.setDocuments(request.getDocuments().stream().peek(document -> document.setUploadedSuccessfully(true)).toList());

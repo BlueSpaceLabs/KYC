@@ -12,6 +12,7 @@ import org.techdisqus.response.UserOnboardingDetails;
 import org.techdisqus.service.UserDetailsServiceImpl;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -45,12 +46,14 @@ public class UserDetailsUtil {
         List<Document> documents = new ArrayList<>(2);
         if(map.containsKey("fileNames")) {
             String[] fileTypes = map.get("fileTypes").split(",");
-            String[] split = map.get("fileNames").split(",");
-            for (int i = 0; i < split.length; i++) {
-                String fileName = split[i];
+            String[] fileNames = map.get("fileNames").split(",");
+            String[] files = map.get("files").split(",");
+            for (int i = 0; i < fileNames.length; i++) {
+                String fileName = fileNames[i];
                 String fileType = fileTypes[i];
-                String image =
-                        Files.readString(Paths.get("/tmp/" + map.get("msisdn") + "___" + fileName + "___" + fileType  + ".txt"));
+                Path tempFile = Paths.get(files[i]);//.Files.createTempFile(map.get("msisdn") + "___" + fileName + "___" + fileType , ".txt");
+
+                String image = Files.readString(tempFile);
                 Document document = new Document();
                 document.setImage(image);
                 document.setName(fileName);
