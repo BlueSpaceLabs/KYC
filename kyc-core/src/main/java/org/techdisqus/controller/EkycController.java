@@ -65,9 +65,8 @@ public class EkycController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResendOtpResponse> resendOtp(@RequestBody ResendOtpRequest request, KycRequestHeaders kycRequestHeaders) {
         ResendOtpResponse response =  validateAccountService.resendOtp(request,kycRequestHeaders);
-        String token = jwtTokenUtil.generateToken(request.getAccountIdentifier());
 
-        return response.isSuccess() ? ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(response) :
+        return response.isSuccess() ? ResponseEntity.ok().body(response) :
                 ResponseEntity.badRequest().body(response);
     }
 
