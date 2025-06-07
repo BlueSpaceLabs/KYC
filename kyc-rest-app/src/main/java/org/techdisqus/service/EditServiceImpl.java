@@ -27,6 +27,7 @@ public class EditServiceImpl extends KycBaseService implements EditService {
 
         EditResponse editResponse = EditResponse
                 .builder()
+                .userData(request.getRequestInformationString())
                 .documents(userDetailsUtil.getAdditionalDocuments(map))
                 .accountIdentifier(map.get("msisdn"))
                 .userOnboardingDetails(userDetailsUtil.getUserOnboardingDetails(map))

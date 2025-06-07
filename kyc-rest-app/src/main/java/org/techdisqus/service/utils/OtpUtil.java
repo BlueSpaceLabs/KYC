@@ -1,4 +1,4 @@
-package org.techdisqus;
+package org.techdisqus.service.utils;
 
 import java.security.SecureRandom;
 import java.time.Instant;

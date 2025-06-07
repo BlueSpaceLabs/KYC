@@ -4,6 +4,7 @@ package org.techdisqus.service;
 import com.innovatrics.dot.integrationsamples.disapi.model.CustomerOnboardingApi;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.techdisqus.exception.ApiExecutionException;
 import org.techdisqus.request.Document;
 import org.techdisqus.request.KycRequestHeaders;
@@ -39,6 +40,15 @@ public class UserAdditionalDocumentServiceImpl extends KycBaseService implements
 		log.info("upload additional docs started");
 		UploadDocumentsResponse uploadDocumentsResponse = UploadDocumentsResponse.builder().documents(request.getDocuments()).build();
 		Map<String,String> map = request.getRequestInformation();
+
+		uploadDocumentsResponse.setUserData(map);
+
+		if(CollectionUtils.isEmpty(request.getDocuments())
+		||request.getDocuments().size() != 2) {
+			uploadDocumentsResponse.setErrorCode("ADDL-DOC-001");
+			uploadDocumentsResponse.setErrorDetails("Additional documents are missing");
+		}
+
 
 		StringBuilder sb = new StringBuilder();
 

@@ -28,6 +28,7 @@ public class UserSummaryServiceImpl extends KycBaseService implements UserSummar
 
         UserSummaryResponse userSummaryResponse = UserSummaryResponse
                 .builder()
+                .userData(request.getRequestInformationString())
                 .documents(userDetailsUtil.getAdditionalDocuments(map))
                 .accountIdentifier(map.get("msisdn"))
                 .userOnboardingDetails(userDetailsUtil.getUserOnboardingDetails(map))

@@ -3,7 +3,7 @@ package org.techdisqus.service;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.techdisqus.OtpUtil;
+import org.techdisqus.service.utils.OtpUtil;
 import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.ResendOtpRequest;
 import org.techdisqus.request.ValidateAccountRequest;
@@ -28,6 +28,13 @@ public class ValidateAccountServiceImpl extends KycBaseService implements Valida
         ValidateAccountResponse response = ValidateAccountResponse.builder().build();
         response.setAccountIdentifier(request.getAccountIdentifier());
         String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 4);
+
+        if(otp.equals("Maximum OTP send attempts reached. Please wait for 2 minutes.")) {
+            response.setErrorCode("OTP-004");
+            response.setErrorDetails("Maximum OTP send attempts reached. Please wait for 2 minutes.");
+            return response;
+        }
+
         Map<String, String> reqInfo = new HashMap<>();
         reqInfo.put("msisdn", request.getAccountIdentifier());
         reqInfo.put("otp", otp);
@@ -44,6 +51,13 @@ public class ValidateAccountServiceImpl extends KycBaseService implements Valida
         ResendOtpResponse response = ResendOtpResponse.builder().build();
         response.setAccountIdentifier(request.getAccountIdentifier());
         String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 4);
+
+        if(otp.equals("Maximum OTP send attempts reached. Please wait for 2 minutes.")) {
+            response.setErrorCode("OTP-004");
+            response.setErrorDetails("Maximum OTP send attempts reached. Please wait for 2 minutes.");
+            return response;
+        }
+
         Map<String, String> reqInfo = request.getRequestInformation();
         reqInfo.put("msisdn", request.getAccountIdentifier());
         reqInfo.put("otp", otp);

@@ -59,7 +59,7 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         if(!utils.doFuzzyMatch(new DocumentUtils.Name(request.getFirstName(), request.getMiddleName(), request.getLastName()).getFullName(),
                 reqInfo.get("name"),reqInfo)){
             userDetailsResponse.setErrorDetails("Incorrect name");
-            userDetailsResponse.setErrorCode("PERSONAL-001");
+            userDetailsResponse.setErrorCode("USER-DETAILS-001");
         }
         reqInfo.put("externalId", DistributedULIDGenerator.generateULID());
         try {
@@ -91,7 +91,7 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         String dateOfBirth = request.getDateOfBirth();
 
         if("".equals(dateOfBirth)){
-            response.setErrorCode("USER-002");
+            response.setErrorCode("USER-DETAILS-002");
             response.setErrorDetails("Incorrect date of birth");
             log.info("date of birth is null");
 
@@ -99,7 +99,7 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         }
 
         if(!DateUtils.isValidDateFormat(dateOfBirth)){
-            response.setErrorCode("USER-003");
+            response.setErrorCode("USER-DETAILS-003");
             response.setErrorDetails("Incorrect date of birth");
             log.info("date of birth is is not valid {}", dateOfBirth);
 
@@ -117,14 +117,14 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         String message = messageProvider.getMessage("error.gender.missing.value", request.getLocale());
 
         if("".equals(gender)){
-            response.setErrorCode("USER-003");
+            response.setErrorCode("USER-DETAILS-004");
             response.setErrorDetails("Incorrect gender");
             log.info("Gender is null");
             return false;
         }
 
         if(!"M".equals(gender) && !"F".equals(gender)){
-            response.setErrorCode("USER-004");
+            response.setErrorCode("USER-DETAILS-005");
             response.setErrorDetails("Incorrect gender");
             log.info("Gender is not valid {} ", gender);
 
@@ -145,7 +145,7 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         log.info("Age diff is  {} ", diffYears);
         if (diffYears < 18 ) {
             String message = messageProvider.getMessage("error.age.invalid", request.getLocale());
-            response.setErrorCode("USER-005");
+            response.setErrorCode("USER-DETAILS-006");
             response.setErrorDetails(message);
             isAgeValid = false;
             //Token is refreshed at the place where this method is used
@@ -153,7 +153,7 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
 
         if (diffYears > 120) {
             String message = messageProvider.getMessage("error.age.invalid.above.120", request.getLocale());
-            response.setErrorCode("USER-006");
+            response.setErrorCode("USER-DETAILS-007");
             response.setErrorDetails(message);
             isAgeValid = false;
             //Token is refreshed at the place where this method is used

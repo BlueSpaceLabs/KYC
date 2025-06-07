@@ -201,6 +201,21 @@ public class DocumentUtils {
         return "";
     }
 
+    public static String getAge(ContextHolder contextHolder, String source) {
+        Customer customer  = contextHolder.customer();
+
+
+        if(customer.getAge() != null) {
+            if (source.equals(visualZone)) {
+                return customer.getAge().getVisualZone();
+            }else {
+                return customer.getAge().getMrz();
+            }
+        }
+
+        return "";
+    }
+
     public static String getDateOfIssue(ContextHolder contextHolder, String source) {
         Customer customer  = contextHolder.customer();
 

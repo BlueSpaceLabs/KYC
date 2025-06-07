@@ -88,7 +88,7 @@ public class SelfieScanServiceImpl extends KycBaseService
 
 			if(evaluateCustomerLivenessResponse.getErrorCode() != null) {
 				log.error("Error while evaluating liveness {}" , evaluateCustomerLivenessResponse);
-				response.setErrorCode("SELFIE-002");
+				response.setErrorCode("SELFIE-008");
 				response.setErrorDetails("Error while evaluating smile liveness");
 				return response;
 			}else {
