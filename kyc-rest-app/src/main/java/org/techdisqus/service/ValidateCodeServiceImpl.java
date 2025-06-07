@@ -1,7 +1,7 @@
 package org.techdisqus.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.techdisqus.OtpUtil;
+import org.techdisqus.service.utils.OtpUtil;
 import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.ValidateCodeRequest;
 import org.techdisqus.response.ValidateCodeResponse;

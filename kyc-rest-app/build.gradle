@@ -16,8 +16,11 @@ dependencies {
     implementation project(':kyc-core')
     // Spring Boot Starter Web - for building REST APIs, JSON support via Jackson
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
     // Spring Boot Starter Security - for securing your application
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1'

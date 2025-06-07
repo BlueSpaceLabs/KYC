@@ -6,6 +6,7 @@ import com.innovatrics.dot.integrationsamples.disapi.model.CreateDocumentRequest
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
+import org.techdisqus.db.dao.ApplicantDocumentRepository;
 import org.techdisqus.exception.ApiExecutionException;
 import org.techdisqus.exception.BadRequestException;
 import org.techdisqus.request.DocumentScanRequest;
@@ -19,10 +20,7 @@ import org.techdisqus.service.utils.DocumentUtils;
 import org.techdisqus.service.validators.DocumentValidators.*;
 import org.techdisqus.util.Result;
 
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -56,6 +54,9 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
     @Autowired
     private MrzValidator mrzValidator;
 
+    @Autowired(required = false)
+    private ApplicantDocumentRepository applicantDocumentRepository;
+
     @Override
     public DocumentScanResponse scanDocument(DocumentScanRequest request, KycRequestHeaders kycRequestHeaders) {
 
@@ -85,7 +86,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
 
             if(documentType == null || "NOT_SUPPORTED".equalsIgnoreCase(documentType.getSupportLevel())) {
                 log.info("document is not support and support level is {}", (documentType == null ? "null" : documentType.getSupportLevel()));
-                throw new BadRequestException("Document is not supported", "Document is not supported", "doc.is.not.supported", request);
+                throw new BadRequestException("Document is not supported", "Document is not supported", "DOC-SCAN-001", request);
             }
 
             String type = (documentType.getType() != null) ?  documentType.getType() : "";
@@ -107,11 +108,11 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
             reqInfo.put("isPassport",isPassport.get() ? "true" : "false");
 
           /*  if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
-                return setAndReturnErrorResponse("invalid.acct.selection", "Invalid document, foreigners must use  passport", response);
+                return setAndReturnErrorResponse("DOC-SCAN-002", "Invalid document, foreigners must use  passport", response);
             }
 
             if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(documentType.getCountry())) {
-                return setAndReturnErrorResponse("invalid.acct.selection", "Incorrect document used for onboarding", response);
+                return setAndReturnErrorResponse("DOC-SCAN-002", "Incorrect document used for onboarding", response);
             }*/
 
             CompletableFuture<GetCustomerResponse> customerResponseCompletableFuture =
@@ -142,7 +143,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     Result<Boolean> result = customerDateOfBirthValidator.validate(new ValidationContext<>(getCustomerResponse, source, isPassport.get(), request));
 
                    /* if(!result.getResponse()) {
-                        return setAndReturnErrorResponse("invalid.dob", "Invalid date of birth", response);
+                        return setAndReturnErrorResponse("DOC-SCAN-006", "Invalid date of birth", response);
                     }*/
 
                     DocumentUtils.ContextHolder contextHolder = new DocumentUtils.ContextHolder(getCustomerResponse.getCustomer());
@@ -159,8 +160,12 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                         nationality = documentType.getCountry();
                     }
 
+                    if(StringUtils.isEmpty(nationality)){
+                        return setAndReturnErrorResponse("DOC-SCAN-007", "National is not valid", response);
+                    }
+
                  /*   if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(nationality)) {
-                        return setAndReturnErrorResponse("invalid.acct.selection", "Incorrect document used for onboarding", response);
+                        return setAndReturnErrorResponse("DOC-SCAN-002", "Incorrect document used for onboarding", response);
                     }*/
 
                     assert getCustomerResponse.getCustomer() != null;
@@ -181,16 +186,16 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     ValidationContext<DocumentInspectResponse> validationContext =
                             new ValidationContext<>(documentInspectResponse, source, isPassport.get(), request);
                     if(documentExpiryValidator.validate(validationContext).getResponse()) {
-                        return setAndReturnErrorResponse("invalid.doc.expired", "Document is expired", response);
+                        return setAndReturnErrorResponse("DOC-SCAN-003", "Document is expired", response);
                     }
 
                   /*  if(!lowOcrConfidenceTextsValidator.validate(validationContext).getResponse()) {
-                        return setAndReturnErrorResponse("low.ocr.confidence.texts","Low OCR confidence texts", response);
+                        return setAndReturnErrorResponse("DOC-SCAN-005","Low OCR confidence texts", response);
                     }*/
 
                     if(isPassport.get()) {
                         if(!mrzValidator.validate(validationContext).getResponse()) {
-                            return setAndReturnErrorResponse("mrz.checksum.invalid","MRZ checksum is not valid", response);
+                            return setAndReturnErrorResponse("DOC-SCAN-004","MRZ checksum is not valid", response);
                         }
                     }
 
@@ -209,6 +214,27 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     response.setUserData(reqInfo);
                     response.setExtractedDataList(extractedDataList);
 
+                   /* ApplicantDocument applicantDocument = ApplicantDocument.builder()
+                            .gender(DocumentUtils.getGender(contextHolder, source))
+                            .firstName(DocumentUtils.getFirstName(contextHolder, source))
+                            .middleName(DocumentUtils.getMiddleNameViz(contextHolder, source))
+                            .lastName(DocumentUtils.getLastName(contextHolder, source))
+                            .fullName(DocumentUtils.getFullName(contextHolder, source))
+                            .dateOfBirth(DocumentUtils.getDateOfBirthStr(contextHolder, source).equals("") ? null :
+                                    LocalDate.parse(DocumentUtils.getDateOfBirthStr(contextHolder, source), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                            .dateOfExpiry(DocumentUtils.getDateOfExpiry(contextHolder, source).equals("") ? null :
+                                    LocalDate.parse(DocumentUtils.getDateOfExpiry(contextHolder, source), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                            .issuingAuthority(DocumentUtils.getIssuingAuthority(contextHolder, source))
+                            .nationality(nationality)
+                            .documentNumber(DocumentUtils.getDocumentNumber(contextHolder, source))
+                            .edition(DocumentUtils.getEdition(contextHolder))
+                            .supportLevel(getCustomerResponse.getCustomer().getDocument().getType().getSupportLevel())
+                            .type(getCustomerResponse.getCustomer().getDocument().getType().getType())
+                            .country(DocumentUtils.getCountry(contextHolder))
+                            .age((DocumentUtils.getAge(contextHolder,source).equals("") ? null : Integer.parseInt(DocumentUtils.getAge(contextHolder,source))))
+                            .build();
+
+                    applicantDocumentRepository.save(applicantDocument);*/
 
                     return unused;
                 } catch (InterruptedException e) {
