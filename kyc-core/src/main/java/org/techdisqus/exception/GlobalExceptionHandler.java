@@ -3,13 +3,14 @@ package org.techdisqus.exception;
 import com.innovatrics.dot.integrationsamples.disapi.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.techdisqus.response.AbstractResponse;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 
 @Slf4j
@@ -25,13 +26,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         log.error("Error while executing request ", ex);
-        return buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildResponse(ex, INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ApiExecutionException.class)
     public ResponseEntity<?> handleApiExecException(MethodArgumentTypeMismatchException ex) {
         log.error("ApiExecutionException: Error while executing request ", ex);
-        return buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        AbstractResponse response = AbstractResponse.builder()
+                .errorDetails(ex.getMessage())
+                .errorCode("INTERNAL.ERROR")
+                .build();
+
+        return new ResponseEntity<>(response, INTERNAL_SERVER_ERROR);
+
     }
 
     @ExceptionHandler(ApiException.class)
@@ -40,11 +47,11 @@ public class GlobalExceptionHandler {
 
         AbstractResponse response = AbstractResponse.builder()
                 .errorDetails(exception.getMessage())
-                .errorCode(exception.getCode()+"")
+                .errorCode("INTERNAL.ERROR")
                 .requestId(MDC.get("requestId")).build();
         //response.setUserData(MDC.get("requestId"));
 
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MaxAttemptsExceededException.class)
@@ -56,7 +63,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericException(Exception ex) {
         log.error("Exception: Error while executing request ", ex);
-        return buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildResponse(ex, INTERNAL_SERVER_ERROR);
     }
 
 
@@ -67,10 +74,10 @@ public class GlobalExceptionHandler {
                 .errorDetails(exception.getErrorMessage())
                 .errorCode(exception.getErrorCode())
                 .requestId(exception.getRequest().getRequestId()).build();
+
         if(exception.getRequest().getRequestInformationString() != null && !exception.getRequest().getRequestInformation().isEmpty()) {
             response.setUserData(exception.getRequest().getRequestInformation());
         }
-
 
         return new ResponseEntity<>(response, status);
     }

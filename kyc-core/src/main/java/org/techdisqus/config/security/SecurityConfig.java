@@ -85,6 +85,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern("https://sim.webthoughts.in");
+        config.addAllowedOriginPattern("https://kyc.bluwyre.ai");
         config.addAllowedOriginPattern("http://localhost:3000");
         config.addAllowedOriginPattern("https://*.ngrok-free.app");
         //config.addAllowedOriginPattern("*");
