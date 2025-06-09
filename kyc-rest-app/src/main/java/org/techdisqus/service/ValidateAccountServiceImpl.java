@@ -21,13 +21,15 @@ public class ValidateAccountServiceImpl extends KycBaseService implements Valida
 
     private static final SecureRandom random = new SecureRandom();
 
+    private static final int OTP_LEN = 6;
+
     @Override
     public ValidateAccountResponse verify(ValidateAccountRequest request, KycRequestHeaders kycRequestHeaders) {
 
         log.info("account validation started");
         ValidateAccountResponse response = ValidateAccountResponse.builder().build();
         response.setAccountIdentifier(request.getAccountIdentifier());
-        String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 4);
+        String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), OTP_LEN);
 
         if(otp.equals("Maximum OTP send attempts reached. Please wait for 2 minutes.")) {
             response.setErrorCode("OTP-004");
@@ -50,7 +52,7 @@ public class ValidateAccountServiceImpl extends KycBaseService implements Valida
         log.info("resend otp started");
         ResendOtpResponse response = ResendOtpResponse.builder().build();
         response.setAccountIdentifier(request.getAccountIdentifier());
-        String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), 4);
+        String otp = OtpUtil.generateOtp(request.getAccountIdentifier(), OTP_LEN);
 
         if(otp.equals("Maximum OTP send attempts reached. Please wait for 2 minutes.")) {
             response.setErrorCode("OTP-004");
