@@ -30,19 +30,19 @@ public class ValidateCodeServiceImpl extends KycBaseService implements ValidateC
 
         if("Invalid OTP.".equals(message)) {
             response.setErrorCode("OTP-001");
-            response.setErrorCode(message);
+            response.setErrorDetails(message);
             return response;
         }
 
         if("Maximum validation attempts exceeded.".equals(message)) {
             response.setErrorCode("OTP-002");
-            response.setErrorCode(message);
+            response.setErrorDetails(message);
             return response;
         }
 
         if("OTP expired or not found.".equals(message)) {
             response.setErrorCode("OTP-003");
-            response.setErrorCode(message);
+            response.setErrorDetails(message);
             return response;
         }
 
