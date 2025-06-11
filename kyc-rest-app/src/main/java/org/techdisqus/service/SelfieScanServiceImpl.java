@@ -2,7 +2,6 @@ package org.techdisqus.service;
 
 
 
-import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import org.techdisqus.dao.GetImageDao;
 import org.techdisqus.exception.ApiExecutionException;
 import org.techdisqus.request.KycRequestHeaders;
 import org.techdisqus.request.UserSelfieRequest;
-import org.techdisqus.response.AbstractResponse;
 import org.techdisqus.response.ExtractedData;
 import org.techdisqus.response.UserSelfieResponse;
 
@@ -26,6 +24,7 @@ import org.techdisqus.response.UserSelfieResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.techdisqus.service.util.ApiHelper;
+
 
 
 @Component
@@ -203,6 +202,12 @@ public class SelfieScanServiceImpl extends KycBaseService
 				EvaluateCustomerLivenessResponse evaluateCustomerLivenessResponsePassive = customerOnboardingApi.evaluateLiveness(customerId, evaluateCustomerLivenessRequestPassive);
 
 				log.info("evaluateCustomerLivenessResponsePassive liveness score is {} ", evaluateCustomerLivenessResponsePassive.getScore());
+				assert  evaluateCustomerLivenessResponsePassive.getScore() != null;
+				double requiredScorePassiveLiveness = 0.81;
+				if(evaluateCustomerLivenessResponsePassive.getScore() < requiredScorePassiveLiveness) {
+					response.setErrorCode("SMILE-009");
+					response.setErrorDetails("passive liveness score is lesser than " + requiredScorePassiveLiveness);
+				}
 			}
 
 		}
@@ -212,12 +217,4 @@ public class SelfieScanServiceImpl extends KycBaseService
 		return response;
 	}
 
-
-	private void incrementCount(AbstractResponse response, Map<String, String> opaqueData, String whichCount,
-								int count) {
-		opaqueData.put("selfieRetryCount", String.valueOf(count + 1));
-		opaqueData.put(whichCount, String.valueOf(count + 1));
-		opaqueData.put("sentDateTime", String.valueOf(Instant.now().toEpochMilli()));
-		response.setUserData(opaqueData);
-	}
 }

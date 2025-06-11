@@ -1,8 +1,5 @@
 package org.techdisqus.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 
@@ -54,20 +50,12 @@ public class JwtTokenUtil {
         log.info("accountIdentifier {} sessionId {} requestId {}", claims.getSubject(), claims.get("sessionId"),
                 claims.get("requestId"));
 
-        String str = encryptionUtil.decrypt(requestInformation);
 
         if (claims.getExpiration().before(new Date())) {
             throw new RuntimeException("Token is expired");
         }
 
-        Map<String,String> map;
-
-        try {
-             map = new ObjectMapper().readValue(str, new TypeReference<>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to deserialize decrypted userData", e);
-        }
-
+        Map<String,String> map = Utils.parseInfo(requestInformation);
 
         if(map.containsKey("msisdn")) {
             String msisdn = map.get("msisdn");
