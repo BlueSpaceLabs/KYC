@@ -122,39 +122,43 @@ public class SelfieScanServiceImpl extends KycBaseService
 							}
 						}
 
-						if (customerInspectResponse.getSelfieInspection() != null) {
-							if (Boolean.TRUE.equals(customerInspectResponse.getSelfieInspection().getHasMask())) {
-								response.setErrorCode("SELFIE-003");
-								response.setErrorDetails("User wearing mask");
-								return response;
+							if (customerInspectResponse.getSelfieInspection() != null) {
+								log.info("customerInspectResponse.getSelfieInspection()  {}", customerInspectResponse.getSelfieInspection().toJson() );
+								if (Boolean.TRUE.equals(customerInspectResponse.getSelfieInspection().getHasMask())) {
+									response.setErrorCode("SELFIE-003");
+									response.setErrorDetails("User wearing mask");
+									return response;
+								}
+
+								assert customerInspectResponse.getSelfieInspection().getSimilarityWith() != null;
+								if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getSimilarityWith().getDocumentPortrait())) {
+									log.info("portrait does not match with selfie and setting error code SELFIE-004");
+									response.setErrorCode("SELFIE-004");
+									response.setErrorDetails("Portrait and selfie does not match");
+									return response;
+								}
+
+								if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getSimilarityWith().getLivenessSelfies())) {
+									response.setErrorCode("SELFIE-005");
+									response.setErrorDetails("liveness photo and selfie does not match");
+									return response;
+								}
+
+								assert customerInspectResponse.getSelfieInspection().getGenderConsistency() != null;
+								if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getGenderConsistency().getDocumentPortrait())) {
+									log.info("gender does not match with selfie and setting error code SELFIE-006");
+									response.setErrorCode("SELFIE-006");
+									response.setErrorDetails("Gender does not match");
+									return response;
+								}
+
+								Integer age = customerInspectResponse.getSelfieInspection().getAgeEstimate();
+
+
+								log.info("Estimated age from selfie {}", age);
+							} else{
+								log.warn("selfie inspection is null");
 							}
-
-                            assert customerInspectResponse.getSelfieInspection().getSimilarityWith() != null;
-                            if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getSimilarityWith().getDocumentPortrait())) {
-								response.setErrorCode("SELFIE-004");
-								response.setErrorDetails("Portrait and selfie does not match");
-								return response;
-							}
-
-							if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getSimilarityWith().getLivenessSelfies())) {
-								response.setErrorCode("SELFIE-005");
-								response.setErrorDetails("liveness photo and selfie does not match");
-								return response;
-							}
-
-                            assert customerInspectResponse.getSelfieInspection().getGenderConsistency() != null;
-                            if (Boolean.FALSE.equals(customerInspectResponse.getSelfieInspection().getGenderConsistency().getDocumentPortrait())) {
-								response.setErrorCode("SELFIE-006");
-								response.setErrorDetails("Gender does not match");
-								return response;
-							}
-
-							Integer age = customerInspectResponse.getSelfieInspection().getAgeEstimate();
-
-
-							log.info("Estimated age from selfie {}", age);
-
-					}
 					}catch(InterruptedException e){
 						log.error("Execution is interrupted ", e);
 						throw new ApiExecutionException(e, request);
@@ -212,7 +216,7 @@ public class SelfieScanServiceImpl extends KycBaseService
 
 		}
 
-		log.info("selfie scan completed");
+        log.info("selfie scan completed and response error details {} {}", response.getErrorCode(), response.getErrorDetails());
 
 		return response;
 	}
