@@ -69,7 +69,7 @@ public class SecurityConfig {
                         // Permit actuator endpoints (you can restrict these too)
                         .requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole("ADMIN")
                         // Permit validateAccount and other public endpoints
-                        .requestMatchers("/v1/ekyc/validateAccount", "/health", "/status","/api/auth/**")
+                        .requestMatchers("/v1/ekyc/validateAccount","/v1/address/**", "/health", "/status","/api/auth/**")
                         .permitAll()
                         // All other endpoints require authentication
                         .anyRequest().authenticated()

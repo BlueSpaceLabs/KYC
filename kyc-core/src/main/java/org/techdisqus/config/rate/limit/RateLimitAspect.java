@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,9 @@ import org.techdisqus.exception.MaxAttemptsExceededException;
 import org.techdisqus.request.AbstractRequest;
 import org.techdisqus.response.AbstractResponse;
 import org.techdisqus.service.KycBaseService;
+import org.techdisqus.service.rate.limit.RateLimitHandler;
+import org.techdisqus.service.rate.limit.RequestHandlerChain;
+import org.techdisqus.service.rate.limit.ResponseHandlerChain;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
@@ -31,6 +35,12 @@ public class RateLimitAspect {
 
     private final RateLimitStore rateLimitStore;
     private final RateLimitProperties rateLimitProperties;
+
+    @Autowired
+    private RequestHandlerChain requestHandlerChain;
+
+    @Autowired
+    private ResponseHandlerChain responseHandlerChain;
 
     public RateLimitAspect(@Lazy RateLimitStore rateLimitStore, RateLimitProperties rateLimitProperties) {
         this.rateLimitStore = rateLimitStore;
@@ -71,6 +81,9 @@ public class RateLimitAspect {
                             (AbstractRequest) joinPoint.getArgs()[0]
                     );
                 }
+
+                requestHandlerChain.processRequest((AbstractRequest) joinPoint.getArgs()[0], null, joinPoint);
+
             }
 
             // Call the method
@@ -79,6 +92,7 @@ public class RateLimitAspect {
             // Add timestamp only if response indicates error
             if (isFailure(response)) {
                 rateLimitStore.addTimestamp(methodKey, now);
+                responseHandlerChain.processResponse((AbstractRequest) joinPoint.getArgs()[0], (AbstractResponse) response);
             }
             return response;
         }

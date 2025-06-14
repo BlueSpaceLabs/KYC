@@ -24,11 +24,8 @@ public class PreprocessAspect {
 
     private static final Map<String, List<Long>> methodCallTimes = new ConcurrentHashMap<>();
 
-
-
     @Around("execution(* org.techdisqus.service..*(..))")
     public Object preprocess(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = System.currentTimeMillis();
         String methodName = joinPoint.getSignature().toShortString();
         MDC.put("methodName", methodName);
         logger.info("START: {}", methodName);
@@ -49,6 +46,7 @@ public class PreprocessAspect {
             logger.error("ERROR in {}: {}", methodName, ex.getMessage(), ex);
             throw ex;
         }
+
         return joinPoint.proceed();
     }
 
