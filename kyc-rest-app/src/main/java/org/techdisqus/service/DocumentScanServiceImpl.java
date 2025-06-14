@@ -107,13 +107,13 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
 
             reqInfo.put("isPassport",isPassport.get() ? "true" : "false");
 
-          /*  if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
+            if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
                 return setAndReturnErrorResponse("DOC-SCAN-002", "Invalid document, foreigners must use  passport", response);
             }
 
             if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(documentType.getCountry())) {
                 return setAndReturnErrorResponse("DOC-SCAN-002", "Incorrect document used for onboarding", response);
-            }*/
+            }
 
             CompletableFuture<GetCustomerResponse> customerResponseCompletableFuture =
                     ApiHelper.execute(callback -> customerOnboardingApi.getCustomerAsync(customerId, callback), request);
@@ -142,9 +142,9 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     }
                     Result<Boolean> result = customerDateOfBirthValidator.validate(new ValidationContext<>(getCustomerResponse, source, isPassport.get(), request));
 
-                   /* if(!result.getResponse()) {
+                    if(!result.getResponse()) {
                         return setAndReturnErrorResponse("DOC-SCAN-006", "Invalid date of birth", response);
-                    }*/
+                    }
 
                     DocumentUtils.ContextHolder contextHolder = new DocumentUtils.ContextHolder(getCustomerResponse.getCustomer());
 
@@ -164,9 +164,9 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                         return setAndReturnErrorResponse("DOC-SCAN-007", "National is not valid", response);
                     }
 
-                 /*   if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(nationality)) {
+                    if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(nationality)) {
                         return setAndReturnErrorResponse("DOC-SCAN-002", "Incorrect document used for onboarding", response);
-                    }*/
+                    }
 
                     assert getCustomerResponse.getCustomer() != null;
                     CustomerDocument customerDocument = getCustomerResponse.getCustomer().getDocument();
@@ -189,9 +189,9 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                         return setAndReturnErrorResponse("DOC-SCAN-003", "Document is expired", response);
                     }
 
-                  /*  if(!lowOcrConfidenceTextsValidator.validate(validationContext).getResponse()) {
+                    if(!lowOcrConfidenceTextsValidator.validate(validationContext).getResponse()) {
                         return setAndReturnErrorResponse("DOC-SCAN-005","Low OCR confidence texts", response);
-                    }*/
+                    }
 
                     if(isPassport.get()) {
                         if(!mrzValidator.validate(validationContext).getResponse()) {
