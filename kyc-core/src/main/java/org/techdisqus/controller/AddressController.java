@@ -13,7 +13,7 @@ import org.techdisqus.service.AddressService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v1/ekyc")
 public class AddressController {
 
     @Autowired
