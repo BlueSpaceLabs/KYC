@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.techdisqus.request.Address;
 import org.techdisqus.request.KycRequestHeaders;
@@ -25,6 +26,7 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -64,7 +66,7 @@ public class UserDetailsServiceImpl extends KycBaseService implements UserDetail
         reqInfo.put("externalId", DistributedULIDGenerator.generateULID());
         try {
             UserDetailsHolder userDetailsHolder = UserDetailsHolder.builder()
-                    .addresses(request.getAddresses())
+                    .addresses(CollectionUtils.isNotEmpty(request.getAddresses()) ? request.getAddresses() : new ArrayList<>())
                     .gender(request.getGender())
                     .lastName(request.getLastName())
                     .firstName(request.getFirstName())
