@@ -107,13 +107,13 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
 
             reqInfo.put("isPassport",isPassport.get() ? "true" : "false");
 
-            if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
+           /* if(isPassport.get() && request.getSelectedAccountType().getKey().toLowerCase().contains("foreign")) {
                 return setAndReturnErrorResponse("DOC-SCAN-002", "Invalid document, foreigners must use  passport", response);
             }
 
             if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(documentType.getCountry())) {
                 return setAndReturnErrorResponse("DOC-SCAN-002", "Incorrect document used for onboarding", response);
-            }
+            }*/
 
             CompletableFuture<GetCustomerResponse> customerResponseCompletableFuture =
                     ApiHelper.execute(callback -> customerOnboardingApi.getCustomerAsync(customerId, callback), request);
@@ -140,11 +140,11 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                     if(isPassport.get()) {
                         source = mrz;
                     }
-                    Result<Boolean> result = customerDateOfBirthValidator.validate(new ValidationContext<>(getCustomerResponse, source, isPassport.get(), request));
+                    /* Result<Boolean> result = customerDateOfBirthValidator.validate(new ValidationContext<>(getCustomerResponse, source, isPassport.get(), request));
 
-                    if(!result.getResponse()) {
+                   if(!result.getResponse()) {
                         return setAndReturnErrorResponse("DOC-SCAN-006", "Invalid date of birth", response);
-                    }
+                    }*/
 
                     DocumentUtils.ContextHolder contextHolder = new DocumentUtils.ContextHolder(getCustomerResponse.getCustomer());
 
@@ -160,13 +160,13 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                         nationality = documentType.getCountry();
                     }
 
-                    if(StringUtils.isEmpty(nationality)){
+              /*      if(StringUtils.isEmpty(nationality)){
                         return setAndReturnErrorResponse("DOC-SCAN-007", "National is not valid", response);
-                    }
+                    }*/
 
-                    if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(nationality)) {
+                    /*if(!request.getSelectedAccountType().getKey().toLowerCase().contains("foreign") && !isLocalCitizen(nationality)) {
                         return setAndReturnErrorResponse("DOC-SCAN-002", "Incorrect document used for onboarding", response);
-                    }
+                    }*/
 
                     assert getCustomerResponse.getCustomer() != null;
                     CustomerDocument customerDocument = getCustomerResponse.getCustomer().getDocument();
@@ -185,7 +185,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
 
                     ValidationContext<DocumentInspectResponse> validationContext =
                             new ValidationContext<>(documentInspectResponse, source, isPassport.get(), request);
-                    if(documentExpiryValidator.validate(validationContext).getResponse()) {
+                  /*  if(documentExpiryValidator.validate(validationContext).getResponse()) {
                         return setAndReturnErrorResponse("DOC-SCAN-003", "Document is expired", response);
                     }
 
@@ -197,7 +197,7 @@ public class DocumentScanServiceImpl extends KycBaseService implements DocumentS
                         if(!mrzValidator.validate(validationContext).getResponse()) {
                             return setAndReturnErrorResponse("DOC-SCAN-004","MRZ checksum is not valid", response);
                         }
-                    }
+                    }*/
 
                     List<ExtractedData> extractedDataList = List.of(new ExtractedData("dob",DocumentUtils.getDateOfBirthStr(contextHolder, source), "Date of birth"),
                             new ExtractedData("gender",DocumentUtils.getGender(contextHolder, source), "Gender"),
